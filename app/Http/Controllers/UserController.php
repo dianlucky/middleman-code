@@ -8,6 +8,12 @@ use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
+    protected $UserModel;
+
+    public function __construct()
+    {
+        $this->UserModel = new User();
+    }
     /**
      * Display a listing of the resource.
      */
@@ -23,6 +29,44 @@ class UserController extends Controller
         return view('admin.admin.add')->with([
             'title' => 'Tambah admin | Middleman',
         ]);
+    }
+
+    public function adminInsert(StoreUserRequest $request)
+    {
+        $status = $this->UserModel->create([
+            'id' => '',
+            'username' => $request['username'],
+            'password' => bcrypt($request['password']),
+            'name' => $request['name'],
+            'birth_date' => $request['birth_date'],
+            'phone' => $request['phone'],
+            'address' => $request['address'],
+            'role' => 'admin',
+        ]);
+
+        if ($status) {
+            return redirect('/admin')->with('success', 'Data Admin Ditambah!');
+        } else {
+            return redirect('/admin/add')->withErrors(['msg' => 'Ada kesalahan pada input Anda.']);
+        }
+    }
+
+    public function adminEdit($id)
+    {
+        $dataUser = $this->UserModel->where('id', $id)->get();
+        return view('admin.admin.edit')->with([
+            'title' => 'Edit Admin | Middleman',
+            'dataAdmin' => $dataUser,
+        ]);
+    }
+
+    public function adminDelete($id)
+    {
+        $status = $this->UserModel->where('id', $id)->delete();
+
+        if ($status) {
+            return redirect('/admin')->with('success', 'Data admin berhasil terhapus!');
+        }
     }
 
     /**

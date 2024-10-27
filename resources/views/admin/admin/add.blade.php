@@ -20,34 +20,83 @@
             <div class="row">
                 <div class="col-md-12 col-xl-12">
                     <div class="card m-b-30">
-                        <div class="card-body">
-                            <h4 class="mt-0 header-title">General Form</h4>
-                            <p class="text-muted font-14">Form controls flavored by Material Design for Bootstrap
-                                customizations such as <code>bmd-label-floating</code>.</p>
+                        <div class="card-body p-5">
+                            <h4 class="mt-0 header-title">Isi data admin</h4>
+                            {{-- @if ($errors->any())
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <ul>
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif --}}
                             <div class="general-label">
-                                <form class="mb-0">
-                                    <div class="form-group">
-                                        <label for="exampleInputEmail1" class="bmd-label-floating ">Email address</label>
-                                        <input type="email" class="form-control" required id="exampleInputEmail1">
-                                     </div>
-                                    <div class="form-group">
-                                        <label for="exampleInputPassword1" class="bmd-label-floating">Password</label>
-                                        <input type="password" class="form-control" required id="exampleInputPassword1">
+                                <form action="{{ url('/admin/save') }}" method="POST" class="row form-material">
+                                    @csrf
+
+                                    <div class="form-group col-6">
+                                        <label for="username" class="bmd-label-floating">Username</label>
+                                        <input type="text" class="form-control" name="username" required id="username"
+                                            value="{{ old('username') }}">
+                                        @error('username')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="exampleTextarea" class="bmd-label-floating">Example textarea</label>
-                                        <textarea class="form-control" id="exampleTextarea" required rows="3"></textarea>
+                                    <div class="form-group col-6">
+                                        <label for="password" class="bmd-label-floating">Password</label>
+                                        <input type="password" name="password" class="form-control" required id="password"
+                                            value="{{ old('password') }}">
+                                        @error('password')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
 
-                                    <div class="checkbox mb-2">
-                                        <label>
-                                            <input type="checkbox"> Check me out
-                                        </label>
+                                    <div class="form-group col-6">
+                                        <label for="name" class="bmd-label-floating">Nama Lengkap</label>
+                                        <input type="text" class="form-control" name="name" id="name"
+                                            value="{{ old('name') }}">
+                                        @error('name')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-raised mb-0">Submit</button>
-                                    <button class="btn btn-raised btn-secondary mb-0">Cancel</button>
+
+                                    <div class="form-group col-6">
+                                        <label for="phone" class="bmd-label-floating">No HP</label>
+                                        <input type="text" class="form-control" name="phone" id="phone"
+                                            value="{{ old('phone') }}">
+                                        @error('phone')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group col-6">
+                                        <label for="birth_date" class="bmd-label">Tanggal Lahir</label>
+                                        <input type="date" class="form-control" name="birth_date" id="birth_date"
+                                            value="{{ old('birth_date') }}">
+                                        @error('birth_date')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="form-group col-6">
+                                        <label for="address" class="bmd-label-floating">Alamat</label>
+                                        <textarea class="form-control" name="address" id="address" required rows="2">{{ old('address') }}</textarea>
+                                        @error('address')
+                                            <div class="text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary btn-raised mb-0">Simpan</button>
+                                        <a class="btn btn-raised btn-secondary mb-0" href="{{ url('/admin') }}">Cancel</a>
+                                    </div>
                                 </form>
+
                             </div>
                         </div>
                     </div>
