@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class HomepageController extends Controller
 {
+    protected $UserModel;
+
+    public function __construct(){
+        $this->UserModel = new User();
+    }
     public function homepage()
     {
         return view('userview.index', [
@@ -40,7 +46,10 @@ class HomepageController extends Controller
 
      public function transaction()
     {
+        $dataMember = $this->UserModel->where('role', 'member')->get();
+        
         return view('userview.transaction', [
+            'member' => $dataMember,
             'title' => 'Transaction | MiddleMan',
         ]);
     }

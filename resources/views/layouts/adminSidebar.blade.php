@@ -45,7 +45,7 @@
                             <a href="/user" class="waves-effect">
                                 <i class="mdi mdi-account-multiple-outline"></i>
                                 <span>
-                                    User
+                                    Member
                                     {{-- <span class="badge badge-pill badge-primary float-right">7</span> --}}
                                 </span>
                             </a>

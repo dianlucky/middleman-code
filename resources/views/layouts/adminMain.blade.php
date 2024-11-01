@@ -10,6 +10,7 @@
     <meta content="Mannatthemes" name="author" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
+    <link rel="shortcut icon" href={{ url('img/middleman3.png') }} />
 
     <!--Morris Chart CSS -->
     <link rel="stylesheet" href={{ url('assets/plugins/fullcalendar/vanillaCalendar.css') }} />
@@ -32,14 +33,8 @@
     <!-- Responsive datatable examples -->
     <link href={{ url('assets/plugins/datatables/responsive.bootstrap4.min.css') }} rel="stylesheet" type="text/css" />
 
-    <!-- Datetime Picker -->
-    <link href={{ url('assets/plugins/timepicker/tempusdominus-bootstrap-4.css') }} rel="stylesheet" />
-    <link href={{ url('assets/plugins/timepicker/bootstrap-material-datetimepicker.css') }} rel="stylesheet">
-    <link href={{ url('assets/plugins/clockpicker/jquery-clockpicker.min.css') }} rel="stylesheet" />
-    <link href={{ url('assets/plugins/colorpicker/asColorPicker.min.css') }} rel="stylesheet" type="text/css" />
-    <link href={{ url('assets/plugins/select2/select2.min.css') }}rel="stylesheet" type="text/css" />
 
-    
+
 
 </head>
 
@@ -120,19 +115,6 @@
     <script src={{ url('assets/plugins/parsleyjs/parsley.min.js') }}></script>
     <script src={{ url('assets/pages/validation-init.js') }}></script>
 
-    <!-- Datetime picker -->
-    <script src={{ url('assets/plugins/timepicker/moment.js') }}></script>
-    <script src={{ url('assets/plugins/timepicker/tempusdominus-bootstrap-4.js') }}></script>
-    <script src={{ url('assets/plugins/timepicker/bootstrap-material-datetimepicker.js') }}></script>
-    <script src={{ url('assets/plugins/clockpicker/jquery-clockpicker.min.js') }}></script>
-    <script src={{ url('assets/plugins/colorpicker/jquery-asColor.js') }}></script>
-    <script src={{ url('assets/plugins/colorpicker/jquery-asGradient.js') }}></script>
-    <script src={{ url('assets/plugins/colorpicker/jquery-asColorPicker.min.js') }}></script>
-    <script src={{ url('assets/plugins/select2/select2.min.js') }}></script>
-
-    <script src="assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js"></script>
-    <script src="assets/plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js"></script>
-    <script src={{ url('assets/pages/form-advanced.js') }}></script>
 
 </body>
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 
@@ -21,7 +22,20 @@ class UserController extends Controller
     {
         return view('admin.user.index', [
             'title' => 'User | Middleman',
+            'users' => $this->UserModel->where('role', 'member')->get(),
         ]);
+    }
+
+    // app/Http/Controllers/UserController.php
+    public function searchUsers(Request $request)
+    {
+        $query = $request->input('query');
+
+        // Cari username yang sesuai dengan input
+        $users = User::where('username', 'LIKE', "%{$query}%")->where('role', 'member')->get();
+
+        // Kembalikan hasil dalam format JSON
+        return response()->json($users);
     }
 
     public function adminAdd()
@@ -60,6 +74,28 @@ class UserController extends Controller
         ]);
     }
 
+    public function adminUpdate(UpdateUserRequest $request, $id)
+    {
+        $user = $this->UserModel->where('id', $request->id)->first();
+        if (!$user) {
+            return redirect('/admin')->with('error', 'Data admin tidak ditemukan');
+        }
+        $update = $this->UserModel->where('id', $request['id'])->update([
+            'username' => $request['username'],
+            'name' => $request['name'],
+            'phone' => $request['phone'],
+            'birth_date' => $request['birth_date'],
+            'address' => $request['address'],
+            'password' => $request->password != null ? bcrypt($request->password) : $user->password,
+        ]);
+
+        if ($update) {
+            return redirect('/admin')->with('success', 'Data admin berhasil dirubah');
+        } else {
+            return redirect('/admin')->with('error', 'Gagal memperbarui data admin');
+        }
+    }
+
     public function adminDelete($id)
     {
         $status = $this->UserModel->where('id', $id)->delete();
@@ -67,53 +103,5 @@ class UserController extends Controller
         if ($status) {
             return redirect('/admin')->with('success', 'Data admin berhasil terhapus!');
         }
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreUserRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateUserRequest $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
     }
 }

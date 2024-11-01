@@ -30,6 +30,14 @@
                                     <strong>Berhasil!</strong> {{ session('success') }}
                                 </div>
                             @endif
+                              @if (session('error'))
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    <strong>Error!</strong> {{ session('error') }}
+                                </div>
+                            @endif
                             <table id="datatable-buttons" class="table table-striped table-bordered w-100 text-center">
                                 <thead>
                                     <tr>
@@ -51,15 +59,11 @@
                                             <td>{{ $user->birth_date }}</td>
                                             <td>{{ $user->profile_pic }}</td>
                                             <td class="row d-flex justify-content-center align-item-center">
-                                                <form action={{ url('/admin/edit/' . $user->id) }} method="POST">
-                                                    @csrf
-                                                    <button type="submit"
-                                                        class="btn btn-light bg-warning border-0 d-flex justify-content-center align-items-center"
-                                                        style="width: 40px; height: 40px; margin-right: 10px;">
-                                                        <i class="mdi mdi-border-color" style="font-size: 1.5em;"></i>
-                                                    </button>
-                                                </form>
-
+                                                <a href={{ url('/admin/edit/' . $user->id) }}
+                                                    class="btn btn-light bg-warning border-0 d-flex justify-content-center align-items-center"
+                                                    style="width: 40px; height: 40px; margin-right: 10px;">
+                                                    <i class="mdi mdi-border-color" style="font-size: 1.5em;"></i>
+                                                </a>
                                                 <button data-toggle="modal"
                                                     data-target="#modalHapusAdmin{{ $user->id }}"
                                                     class="btn btn-light bg-danger border-0 d-flex justify-content-center align-items-center"

@@ -9,7 +9,7 @@
     <meta content="Free HTML Templates" name="description">
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="img/middleman3.png" />
+    <link rel="shortcut icon" href={{ url('img/middleman3.png') }} />
 
 
     <!-- Google Web Fonts -->
@@ -17,8 +17,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
+        
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- CSS DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+
+    <!-- jQuery dan DataTables JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
 
     <!-- Libraries Stylesheet -->
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
@@ -88,8 +96,14 @@
     <script src="mail/jqBootstrapValidation.min.js"></script>
     <script src="mail/contact.js"></script>
 
+    <!-- Required datatable js -->
+    <script src={{ url('assets/plugins/datatables/jquery.dataTables.min.js') }}></script>
+    <script src={{ url('assets/plugins/datatables/dataTables.bootstrap4.min.js') }}></script>
+
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+
 
 </body>
 

@@ -22,22 +22,9 @@
                     <div class="card m-b-30">
                         <div class="card-body p-5">
                             <h4 class="mt-0 header-title">Isi data admin</h4>
-                            {{-- @if ($errors->any())
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                    <ul>
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif --}}
                             <div class="general-label">
                                 <form action="{{ url('/admin/save') }}" method="POST" class="row form-material">
                                     @csrf
-
                                     <div class="form-group col-6">
                                         <label for="username" class="bmd-label-floating">Username</label>
                                         <input type="text" class="form-control" name="username" required id="username"
@@ -93,7 +80,7 @@
 
                                     <div class="col-12">
                                         <button type="submit" class="btn btn-primary btn-raised mb-0">Simpan</button>
-                                        <a class="btn btn-raised btn-secondary mb-0" href="{{ url('/admin') }}">Cancel</a>
+                                        <a class="btn btn-raised btn-secondary mb-0" href="{{ url('/admin') }}">Batal</a>
                                     </div>
                                 </form>
 
