@@ -24,7 +24,10 @@ Route::get('/testimonial', [HomepageController::class, 'testimonial']);
 Route::get('/contact', action: [HomepageController::class, 'contact']);
 Route::get('/transaction', action: [HomepageController::class, 'transaction']);
 
-Route::get('/login', [LoginController::class, 'index']);
+Route::prefix('/login')->group(function(){
+    Route::get('/', [LoginController::class, 'login']);
+    Route::post('/auth', [LoginController::class, 'auth']);
+});
 
 Route::prefix('register')->group(function(){
     Route::get('/', [LoginController::class, 'register']);

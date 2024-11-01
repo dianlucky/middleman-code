@@ -23,22 +23,19 @@
                                     <h4 class="font-weight-bold mb-3">Ruangan transaksi</h4>
                                 </div>
                                 <div class="col-6">
-                                    <div class="row g-0">
-                                        <div class="col-10 input-group ">
-                                            <input type="text" class="form-control border-0 p-2 ml-4"
-                                                placeholder="id ruangan">
-                                            <div class="input-group-append">
-                                                <span class="input-group-text bg-primary border-primary text-white"><i
-                                                        class="fa fa-search"></i></span>
-                                            </div>
+                                    <div class="col-12 input-group ">
+                                        <input type="text" class="form-control border-0 p-2 ml-4"
+                                            placeholder="id ruangan">
+                                        <div class="input-group-append">
+                                            <span class="input-group-text bg-primary border-primary text-white"><i
+                                                    class="fa fa-search"></i></span>
                                         </div>
-                                        <div class="col-2">
+                                         <div class="ml-1">
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
                                                 data-target="#modalTambahRuangan"><i class="fa fa-plus"></i></button>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -57,8 +54,8 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body">
-                            <form action={{ url('/transaction/add') }} method="POST">
+                        <div class="modal-body bg-secondary">
+                            <form action={{ url('/transaction/add') }} method="POST" class="flex-grow-1">
                                 <div class="control-group">
                                     <input type="text" class="form-control border-0 p-4" id="name"
                                         placeholder="Nama ruangan" required="required"
@@ -66,15 +63,19 @@
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="control-group">
-                                    <input type="text" class="form-control border-0 p-4" id="role"
-                                        placeholder="Peran (Penjual / Pembeli)" required="required"
-                                        data-validation-required-message="Harap tambahkan peran anda" />
+                                    <select class="custom-select">
+                                        <option selected>Pilih peran</option>
+                                        <option value="penjual">Penjual</option>
+                                        <option value="pembeli">Pembeli</option>
+                                    </select>
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="control-group">
-                                    <input type="text" class="form-control border-0 p-4" id="admin"
-                                        placeholder="Pilih Admin" required="required"
-                                        data-validation-required-message="Harap tambahkan admin ke dalam ruangan" />
+                                    <select class="custom-select">
+                                        <option selected>Pilih admin</option>
+                                        <option value="1">Admin 1</option>
+                                        <option value="2">Admin 2</option>
+                                    </select>
                                     <p class="help-block text-danger"></p>
                                 </div>
                             </form>
@@ -95,16 +96,17 @@
                 <div class="mb-5">
                     <div class="bg-secondary" style="padding: 30px; height: 550px;">
                         <div class="row">
-                            <div class="col-4">
-                                <h4 class="font-weight-bold mb-3">Pengguna</h4>
+                            <div class="col-3">
+                                <h4 class="font-weight-bold mb-3">Teman</h4>
                             </div>
-                            <div class="col-8">
+                            <div class="col-9">
                                 <div class="input-group">
                                     <input type="text" id="search-input" class="form-control border-0 p-2 ml-4"
                                         placeholder="Search">
                                     <div class="input-group-append">
                                         <span class="input-group-text bg-primary border-primary text-white"><i
                                                 class="fa fa-search"></i></span>
+                                        <button class="btn btn-primary ml-1"><i class="fa fa-bell"></i></button>
                                     </div>
                                 </div>
                             </div>

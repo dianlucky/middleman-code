@@ -8757,7 +8757,7 @@ p,
     url(../img/about.jpg);
   background-position: top;
   background-repeat: no-repeat;
-  background-size: auto;
+  background-size: automa;
 }
 .btn-play {
   position: relative;

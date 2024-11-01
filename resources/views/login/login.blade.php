@@ -48,18 +48,25 @@
                                 <strong>Berhasil!</strong> {{ session('success') }}
                             </div>
                         @endif
+                         @if (session('error'))
+                            <div class="alert text-light bg-danger alert-dismissible fade show" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <strong>Login gagal!</strong> {{ session('error') }}
+                            </div>
+                        @endif
                         <div id="success"></div>
-                        <form name="sentMessage" id="contactForm" novalidate="novalidate" class="flex-grow-1">
+                        <form action={{url('/login/auth')}} method="POST">
+                            @csrf
                             <div class="control-group">
                                 <input type="text" class="form-control border-0 p-4" id="name"
-                                    placeholder="Username" required="required"
-                                    data-validation-required-message="Please enter your name" />
+                                    placeholder="Username" required="required" name="username" value="{{old('username')}}"/>
                                 <p class="help-block text-danger"></p>
                             </div>
                             <div class="control-group position-relative">
                                 <input type="password" class="form-control border-0 p-4" id="password"
-                                    placeholder="Password" required="required"
-                                    data-validation-required-message="Please enter your password" />
+                                    placeholder="Password" required="required" name="password" value="{{old('[password]')}}"/>
                                 <span id="toggle-password" class="position-absolute"
                                     style="right: 15px; top: 15px; cursor: pointer;">
                                     <i class="fa fa-eye"></i>
