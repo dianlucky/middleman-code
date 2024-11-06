@@ -92,7 +92,7 @@
                             </div>
                         </form>
                         <div class="mt-5 mb-5 text-center">
-                            <p class="text-primary">Sudah memiliki akun? <a href="{{ url('/login') }}"
+                            <p class="text-dark">Sudah memiliki akun? <a href="{{ url('/login') }}"
                                     class="">Login!</a></p>
                         </div>
                     </div>

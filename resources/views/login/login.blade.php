@@ -34,7 +34,7 @@
             <div class="row">
                 <div class="col-lg-6 pb-4 pb-lg-0">
                     <div class="img-container">
-                        <img src="{{ url('/img/middleman3.png') }}" alt="" class="img-fluid">
+                       <a href={{url('/')}}><img src="{{ url('/img/middleman3.png') }}" alt="" class="img-fluid"></a> 
                     </div>
                 </div>
                 <div class="col-lg-6 mt-5">
@@ -79,7 +79,7 @@
                             </div>
                         </form>
                         <div class="mt-auto text-center">
-                            <p class="text-primary">Belum memiliki akun? <a href="{{ url('/register') }}"
+                            <p class="text-dark">Belum memiliki akun? <a href="{{ url('/register') }}"
                                     class="">Daftar Sekarang!</a></p>
                         </div>
                     </div>

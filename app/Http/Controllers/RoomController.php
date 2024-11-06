@@ -8,6 +8,13 @@ use App\Http\Requests\UpdateRoomRequest;
 
 class RoomController extends Controller
 {
+
+    protected $RoomModel;
+
+    public function __construct()
+    {
+        $this->RoomModel = new Room();
+    }
     /**
      * Display a listing of the resource.
      */
@@ -16,20 +23,30 @@ class RoomController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreRoomRequest $request)
+    public function create(StoreRoomRequest $request)
     {
-        //
+        // dd($this->RoomModel->generateRoomId());
+        $status = $this->RoomModel->create([
+            'id' => $this->RoomModel->generateRoomId(),
+            'name' => $request['name'],
+            'user_id1' => $request['user_id1'],
+            'role_user1' => $request['role_user1'],
+            'role_user2' => $request['role_user1'] == 'pembeli' ? 'penjual' : 'pembeli',
+            'admin_id' => $request['admin_id'],
+            'status' => 'ongoing',
+        ]);
+
+        if($status) {
+            return redirect('/transaction')->with('success', 'Ruangan transaksi berhasil dibuat');
+        } else {
+            return redirect()->back()->with('error', 'Gagal membuat ruangan')->withInput();
+        }
+
     }
 
     /**

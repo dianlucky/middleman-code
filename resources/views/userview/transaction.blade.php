@@ -16,8 +16,8 @@
             <!-- Blog Grid Start -->
             <div class="col-lg-8">
                 <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <div class="bg-secondary mb-3" style="padding: 30px; height: 550px;">
+                    <div class="col-md-12 mb-2">
+                        <div class="bg-secondary" style="padding: 30px; height: 350px;">
                             <div class="row">
                                 <div class="col-6">
                                     <h4 class="font-weight-bold mb-3">Ruangan transaksi</h4>
@@ -30,7 +30,7 @@
                                             <span class="input-group-text bg-primary border-primary text-white"><i
                                                     class="fa fa-search"></i></span>
                                         </div>
-                                         <div class="ml-1">
+                                        <div class="ml-1">
                                             <button type="button" class="btn btn-primary" data-toggle="modal"
                                                 data-target="#modalTambahRuangan"><i class="fa fa-plus"></i></button>
                                         </div>
@@ -39,6 +39,44 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-12 mb-3">
+                        <div class="bg-secondary mb-3" style="padding: 30px; height: 200px;">
+                            <div class="row">
+                                <div class="col-6">
+                                    <h4 class="font-weight-bold mb-3">Ruangan saya</h4>
+                                </div>
+                            </div>
+
+                            <!-- Carousel -->
+                            <div id="roomCarousel" class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner">
+                                    @foreach ($myRooms as $index => $room)
+                                        <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                                            <a class="text-decoration-none" href="{{ url('/room/' . $room->id) }}">
+                                                <div class="bg-primary px-3 pt-2 shadow-lg rounded-lg">
+                                                    <h5 class="text-white text-center font-weight-bold text-truncate">
+                                                        {{ $room->name }}</h5>
+                                                    <p class="text-white text-right"><small>Room id:
+                                                            <span>{{ $room->id }}</span></small></p>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <!-- Navigasi Carousel -->
+                                <a class="carousel-control-prev" href="#roomCarousel" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#roomCarousel" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <!-- Blog Grid End -->
@@ -54,16 +92,18 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div class="modal-body bg-secondary">
-                            <form action={{ url('/transaction/add') }} method="POST" class="flex-grow-1">
+                        <form action={{ url('/transaction/create') }} method="POST" class="flex-grow-1">
+                            @csrf
+                            <input type="hidden" name="user_id1" value={{ auth()->user()->id }}>
+                            <div class="modal-body bg-secondary">
                                 <div class="control-group">
                                     <input type="text" class="form-control border-0 p-4" id="name"
-                                        placeholder="Nama ruangan" required="required"
+                                        placeholder="Nama ruangan" required="required" name="name"
                                         data-validation-required-message="Harap masukkan nama ruangan" />
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="control-group">
-                                    <select class="custom-select">
+                                    <select name="role_user1" class="custom-select" required>
                                         <option selected>Pilih peran</option>
                                         <option value="penjual">Penjual</option>
                                         <option value="pembeli">Pembeli</option>
@@ -71,19 +111,20 @@
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="control-group">
-                                    <select class="custom-select">
+                                    <select name="admin_id" class="custom-select" required>
                                         <option selected>Pilih admin</option>
-                                        <option value="1">Admin 1</option>
-                                        <option value="2">Admin 2</option>
+                                        @foreach ($admin as $adm)
+                                            <option value={{ $adm->id }}>{{ $adm->name }}</option>
+                                        @endforeach
                                     </select>
                                     <p class="help-block text-danger"></p>
                                 </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                            <button type="button" class="btn btn-primary">Buat ruangan</button>
-                        </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                <button type="submit" class="btn btn-primary">Buat ruangan</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -114,11 +155,19 @@
                         <table class="table w-100 text-left">
                             <tbody id="user-table-body" style="display: block; max-height: 450px; overflow-y: auto;">
                                 <!-- Hasil pencarian akan ditampilkan di sini -->
-                                @foreach ($member as $m)
-                                    <tr>
-                                        <td>{{ $m->username }}</td>
-                                        <td></td>
-                                    </tr>
+
+                                @foreach ($friendlist as $m)
+                                    @if ($friendlist->isNotEmpty())
+                                        <tr>
+                                            <td>{{ $m->username }}</td>
+                                            <td></td>
+                                        </tr>
+                                    @else
+                                        <tr>
+                                            <td>Kosong</td>
+                                            <td></td>
+                                        </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
@@ -143,7 +192,7 @@
 
                     // Perulangan hasil pencarian dan tampilkan di tabel
                     data.forEach(user => {
-                        const row = `<tr><td>${user.username}</td><td></td></tr>`;
+                        const row = `<tr><td>${user.username}</td><td> blah blah</td></tr>`;
                         tableBody.innerHTML += row;
                     });
                 })

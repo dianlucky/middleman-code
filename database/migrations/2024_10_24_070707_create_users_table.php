@@ -20,6 +20,7 @@ return new class extends Migration {
             $table->date('birth_date')->nullable(true);
             $table->string('profile_pic')->default('def-profile.png');
             $table->text('address')->nullable(true);
+            $table->timestamps();
         });
     }
 

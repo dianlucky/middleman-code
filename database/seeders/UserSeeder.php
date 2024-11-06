@@ -56,6 +56,14 @@ class UserSeeder extends Seeder
                 'name' => 'Admin Fauzan',
                 'role' => 'admin',
             ],
+            [
+                'id' => 7,
+                'username' => 'member',
+                'password' => '$2y$10$yHCzC5/zPRE.TYbDNmyGgum/eSJimktjRIMyTE81fMdnuydJ.1e1u', // member123
+                'name' => 'Member testing',
+                'role' => 'member',
+            ],
+            
         ]);
     }
 }

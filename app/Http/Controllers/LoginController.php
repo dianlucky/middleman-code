@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AuthRequest;
-use App\Http\Requests\StoreUserRequest;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Http\Requests\AuthRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\StoreUserRequest;
 
 class LoginController extends Controller
 {
@@ -48,25 +49,29 @@ class LoginController extends Controller
 
     public function auth(AuthRequest $request)
     {
-        // dd($request);
-        $account = $this->UserModel->where('username', $request->username)->first();
+        $credentials = $request->only('username', 'password');
 
-        if (!$account) {
-            return redirect('/login')->with('error', 'Username atau password salah!')->withInput();
-        }
+        if (Auth::attempt($credentials)) {
+            // Autentikasi berhasil...
+            $account = Auth::user();
 
-        $password_check = Hash::check($request->password, $account->password);
-
-        if ($password_check) {
-            $_SESSION['account'] = $account;
-            dd($_SESSION['account']);
-            if($account->role == 'admin'){
-                return redirect()->to('/dashboard')->with('success', 'Selamat datang'. $account->name);
+            if ($account->role == 'admin' || $account->role == 'superadmin') {
+                return redirect()
+                    ->to('/dashboard')
+                    ->with('success', 'Selamat datang ' . $account->name);
             } else {
-                return redirect()->to('/')->with('success', 'Selamat datang'. $account->name);
+                return redirect()
+                    ->to('/')
+                    ->with('success', 'Selamat datang ' . $account->name);
             }
-        } else {
-            return redirect('/login')->with('error', 'Username atau password salah!')->withInput();
         }
+
+        return redirect('/login')->with('error', 'Username atau password salah!')->withInput();
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        return redirect('/login')->with('success', 'Terimakasih!.');
     }
 }

@@ -16,9 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->integer('user_id1');
             $table->string('role_user1');
-            $table->integer('user_id2');
+            $table->integer('user_id2')->nullable();
             $table->string('role_user2');
             $table->integer('admin_id');
+            $table->string('status');
             $table->timestamps();
         });
     }
