@@ -6,6 +6,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\AdminPageController;
+use App\Http\Controllers\ConversationController;
+use App\Models\Conversation;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,10 +25,18 @@ Route::get('/about', [HomepageController::class, 'about']);
 Route::get('/price', [HomepageController::class, 'price']);
 Route::get('/testimonial', [HomepageController::class, 'testimonial']);
 Route::get('/contact', action: [HomepageController::class, 'contact']);
+
 Route::prefix('transaction')->middleware('auth')->group(function(){
     Route::get('/', [HomepageController::class, 'transaction']);
-    Route::post('/create', [RoomController::class, 'create']);
 });
+
+Route::prefix('room')->middleware('auth')->group(function(){
+    Route::post('/create', [RoomController::class, 'create']);
+    Route::post('/in', [RoomController::class, 'in']);
+    Route::get('/{id}', [RoomController::class, 'roomEnter']);
+});
+
+Route::post('/send-message', [ConversationController::class, 'sendMessage'])->middleware('auth');
 
 Route::prefix('/login')->middleware('guest')->group(function(){
     Route::get('/', [LoginController::class, 'login']);
@@ -42,6 +52,7 @@ Route::prefix('register')->group(function(){
 
 // routes/web.php
 Route::get('/search-users', [UserController::class, 'searchUsers'])->name('search.users');
+Route::get('/search-rooms', [RoomController::class, 'searchRooms'])->name('search.room');
 
 
 Route::get('/dashboard', [AdminPageController::class, 'dashboard'])->middleware(['auth', 'is_admin']);

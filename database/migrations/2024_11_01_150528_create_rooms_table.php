@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rooms', function (Blueprint $table) {
-            $table->string('id');
+            $table->string('id')->unique()->primary();
             $table->string('name');
+            $table->string('password')->nullable();
             $table->integer('user_id1');
             $table->string('role_user1');
             $table->integer('user_id2')->nullable();

@@ -7,32 +7,28 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
-
     <!-- Favicon -->
     <link rel="shortcut icon" href={{ url('img/middleman3.png') }} />
-
-
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
-
-        
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 JavaScript -->
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-
     <!-- CSS DataTables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
-
     <!-- jQuery dan DataTables JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
-
     <!-- Libraries Stylesheet -->
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
+    <link href={{ url('lib/owlcarousel/assets/owl.carousel.min.css') }} rel="stylesheet">
     <!-- Customized Bootstrap Stylesheet -->
-    <link href="css/style.css" rel="stylesheet">
+    <link href={{ url('css/style.css') }} rel="stylesheet">
+    @vite('resources/js/app.js')
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -78,30 +74,33 @@
                 </div>
             </div>
             <div class="col-lg-5 col-md-6 mb-5">
-                <img class="ml-5 img-fluid w-50" src="img/footer.png" alt="">
+                <img class="ml-5 img-fluid w-50" src={{url("img/footer.png")}} alt="">
             </div>
         </div>
     </div>
     <!-- Footer End -->
 
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/counterup/counterup.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src={{url("lib/easing/easing.min.js")}}></script>
+    <script src={{url("lib/waypoints/waypoints.min.js")}}></script>
+    <script src={{url("lib/counterup/counterup.min.js")}}></script>
+    <script src={{url("lib/owlcarousel/owl.carousel.min.js")}}></script>
+
+    {{-- Select 2 --}}
+    <script src={{url("https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js")}}></script>
 
     <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+    <script src={{ url('mail/jqBootstrapValidation.min.js') }}></script>
+    <script src={{ url('mail/contact.js') }}></script>
 
     <!-- Required datatable js -->
     <script src={{ url('assets/plugins/datatables/jquery.dataTables.min.js') }}></script>
     <script src={{ url('assets/plugins/datatables/dataTables.bootstrap4.min.js') }}></script>
 
     <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+    <script src={{ url('js/main.js') }}></script>
 
 
 
