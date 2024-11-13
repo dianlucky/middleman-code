@@ -155,7 +155,7 @@
                             <i class="mdi mdi-lock-open-outline m-r-5 text-muted"></i>
                             Lock screen</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">
+                        <a href={{url('/logout')}} class="dropdown-item">
                             <i class="mdi mdi-logout m-r-5 text-muted"></i> Logout</a>
                     </div>
                 </li>
