@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rooms', function (Blueprint $table) {
+
             $table->string('id')->unique()->primary();
             $table->string('name');
             $table->string('password')->nullable();
@@ -21,6 +22,7 @@ return new class extends Migration
             $table->string('role_user2');
             $table->integer('admin_id');
             $table->string('status');
+
             $table->timestamps();
         });
     }

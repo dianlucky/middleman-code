@@ -55,7 +55,7 @@ class HomepageController extends Controller
 
     public function transaction()
     {
-        $dataMember = $this->UserModel->where('role', 'member')->get();
+        $dataMember = $this->UserModel->whereKeyNot(auth()->id())->where('role', 'member')->get();
         $dataFriendList = $this->FriendlistModel->where('status', 'friend')->get();
         $dataAdmin = $this->UserModel->where('role', 'admin')->get();
         $dataRoom = $this->RoomModel->where('status', 'ongoing')->get();
