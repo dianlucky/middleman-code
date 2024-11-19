@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomepageController;
@@ -26,20 +25,15 @@ Route::get('/price', [HomepageController::class, 'price']);
 Route::get('/testimonial', [HomepageController::class, 'testimonial']);
 Route::get('/contact', action: [HomepageController::class, 'contact']);
 
-Route::prefix('transaction')->middleware('auth')->group(function(){
-    Route::get('/', [HomepageController::class, 'transaction']);
-});
-
-Route::prefix('room')->middleware('auth')->group(function(){
-    Route::post('/create', [RoomController::class, 'create']);
-    Route::post('/in', [RoomController::class, 'in']);
-    Route::get('/{id}', [RoomController::class, 'roomEnter']);
+Route::prefix('transaction')->middleware('auth')->group(function()
+{
+    Route::get('/', \App\Livewire\Chat::class);
 });
 
 Route::post('/send-message', [ConversationController::class, 'sendMessage'])->middleware('auth');
 
 Route::prefix('/login')->middleware('guest')->group(function(){
-    Route::get('/', [LoginController::class, 'login']);
+    Route::get('/', [LoginController::class, 'login'])->name('login');
     Route::post('/auth', [LoginController::class, 'auth']);
 });
 
@@ -52,8 +46,6 @@ Route::prefix('register')->group(function(){
 
 // routes/web.php
 Route::get('/search-users', [UserController::class, 'searchUsers'])->name('search.users');
-Route::get('/search-rooms', [RoomController::class, 'searchRooms'])->name('search.room');
-
 
 Route::get('/dashboard', [AdminPageController::class, 'dashboard'])->middleware(['auth', 'is_admin']);
 Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {

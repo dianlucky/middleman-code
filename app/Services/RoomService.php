@@ -35,11 +35,13 @@ class RoomService extends Service
     }
 
     /**
+     * @param array $datas
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(array $datas = []): JsonResponse
     {
-        $rooms = $this->roomRepository->all();
+        $roomId = $datas['id'] ?? 0;
+        $rooms = $this->roomRepository->all($roomId);
         return response()->json($rooms, 200);
     }
 

@@ -14,16 +14,29 @@ use App\Models\Room;
 class RoomRepository extends RoomAdminRepository
 {
     /**
+     * @param int|string $id
      * @return Room[]|null
      */
-    public function all(): ?array
+    public function all(int|string $id = 0)
     {
-        return parent::accessAll(
-            fn() => Room::where(function ($query) {
-                $query->where('user_id1', '=', $this->getUser()->id)
-                      ->orWhere('user_id2', '=', $this->getUser()->id);
-            })->get()
-        );
+        if (! $id) {
+            return parent::accessAll(
+                fn() => Room::where(function ($query) {
+                    $query->where('status', '=', self::$STATUS_ONGOING)
+                            ->orWhere('user_id1', '=', $this->getUser()->id)
+                            ->orWhere('user_id2', '=', $this->getUser()->id);
+                })->get()
+            );
+        } else {
+            return parent::accessAll(
+                fn() => Room::where(function ($query) {
+                    $query->where('status', '=', self::$STATUS_ONGOING)
+                            ->where('id', 'like', '%'.$id.'%')
+                            ->orWhere('user_id1', '=', $this->getUser()->id)
+                            ->orWhere('user_id2', '=', $this->getUser()->id);
+                })->get()
+            );
+        }
     }
 
     /**
@@ -34,11 +47,48 @@ class RoomRepository extends RoomAdminRepository
     {
         return parent::accessGet(
             fn() => Room::where(function ($query) use ($id) {
-                $query->where('user_id1', '=', $this->getUser()->id)
-                      ->orWhere('user_id2', '=', $this->getUser()->id)
-                      ->where('id', '=', $id);
+                $query->where('status', '=', self::$STATUS_ONGOING)
+                ->orWhere('user_id1', '=', $this->getUser()->id)
+                ->orWhere('user_id2', '=', $this->getUser()->id)
+                ->where('id', '=', $id);
             })->firstOrFail()
         );
+    }
+
+    /**
+     * @param int|string $id
+     * @return Room|null
+     */
+    public function join(int|string $id): ?Room
+    {
+        $room = parent::accessGet(
+            fn() => Room::where([
+                ['status', '=', self::$STATUS_ONGOING],
+                ['user_id2', '=', $this->getUser()->id],
+                ['status_user2', '=', self::$INVITER_STATUS_LEAVED],
+                ['id', '=', $id],
+            ])->firstOrFail()
+        );
+
+        return parent::update($room->id, ['inviter_status' => self::$INVITER_STATUS_JOINED]);
+    }
+
+    /**
+     * @param int|string $id
+     * @return Room|null
+     */
+    public function leave(int|string $id): ?Room
+    {
+        $room = parent::accessGet(
+            fn() => Room::where([
+                ['status', '=', self::$STATUS_ONGOING],
+                ['user_id2', '=', $this->getUser()->id],
+                ['status_user2', '=', self::$INVITER_STATUS_JOINED],
+                ['id', '=', $id],
+            ])->firstOrFail()
+        );
+
+        return parent::update($room->id, ['inviter_status' => self::$INVITER_STATUS_LEAVED]);
     }
 
     /**
@@ -52,6 +102,8 @@ class RoomRepository extends RoomAdminRepository
     }
 
     /**
+     * Go into existed room.
+     *
      * @param array $data
      * @return Room|null
      */
@@ -63,6 +115,8 @@ class RoomRepository extends RoomAdminRepository
     }
 
     /**
+     * Go outfrom existed room.
+     *
      * @param int|string $id
      * @return Room|null
      */

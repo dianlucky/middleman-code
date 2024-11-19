@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\Room;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * @method Room[]|null all()
@@ -14,18 +15,29 @@ use App\Models\Room;
  */
 class RoomAdminRepository extends Repository
 {
-    public static string $STATUS_ONGOING = 'ongoing';
-    public static string $STATUS_CANCELED = 'canceled';
-    public static string $STATUS_DONE = 'done';
     public static string $ROLE_SELLER = 'penjual';
     public static string $ROLE_BUYER = 'pembeli';
 
+    public static string $STATUS_ONGOING = 'ongoing';
+    public static string $STATUS_CANCELED = 'canceled';
+    public static string $STATUS_DONE = 'done';
+
+    public static string $INVITER_STATUS_JOINED = 'joined';
+    public static string $INVITER_STATUS_LEAVED = 'leaved';
+
     /**
+     * @param int|string $id
      * @return Room[]|null
      */
-    public function all(): ?array
+    public function all(int|string $id = 0)
     {
-        return parent::accessAll(fn() => Room::get());
+        if (! $id) return parent::accessAll(fn() => Room::get());
+        else {
+            return parent::accessAll(fn() => Room::where([
+                ['status', '=', self::$STATUS_ONGOING],
+                ['id', 'like', '%'.$id.'%'],
+            ])->get());
+        }
     }
 
     /**
@@ -48,8 +60,9 @@ class RoomAdminRepository extends Repository
 
         return parent::mutateUpdate(function() use ($data, $model) {
             if (isset($data['room_name'])) $model->name = $data['room_name'];
-            if (isset($data['room_password'])) $model->password = $data['room_password'];
+            if (isset($data['room_password'])) $model->password = Hash::make($data['room_password']);
             if (isset($data['room_status'])) $model->status = $data['room_status'];
+            if (isset($data['inviter_status'])) $model->status_user2 = $data['inviter_status'];
             $model->save();
 
             return $model;
@@ -76,6 +89,7 @@ class RoomAdminRepository extends Repository
             $model->role_user1 = $data['owner_role'];
             $model->inviter()->associate($inviter);
             $model->role_user2 = $data['owner_role'] === self::$ROLE_SELLER ? self::$ROLE_BUYER : self::$ROLE_SELLER;
+            $model->status_user2 = $data['inviter_status'] ?? self::$INVITER_STATUS_LEAVED;
             $model->admin()->associate($admin);
             $model->save();
 

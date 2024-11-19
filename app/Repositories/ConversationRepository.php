@@ -46,7 +46,7 @@ class ConversationRepository extends ConversationAdminRepository
     /**
      * @return Conversation[]|null
      */
-    public function all(): ?array
+    public function all()
     {
         $roomId = $this->getRoom()->id;
 

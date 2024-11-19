@@ -18,7 +18,7 @@ class ConversationAdminRepository extends Repository
     /**
      * @return Conversation[]|null
      */
-    public function all(): ?array
+    public function all()
     {
         return parent::accessAll(fn() => Conversation::all());
     }

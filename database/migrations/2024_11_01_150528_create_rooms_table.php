@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('role_user1');
             $table->integer('user_id2')->nullable();
             $table->string('role_user2');
+            $table->string('status_user2');
             $table->integer('admin_id');
             $table->string('status');
 

@@ -1,299 +1,272 @@
-@extends('layouts.userMain')
+@push('styles')
+    <livewire:styles />
+@endpush
 
-@section('content')
-    {{-- <!-- Header Start -->
-    <div class="jumbotron jumbotron-fluid mb-5">
-        <div class="container text-center py-5">
-            <h1 class="text-white display-3">Transaction</h1>
-            <h3 class="text-primary mb-4">MiddleMan</h3>
-        </div>
-    </div>
-    <!-- Header End --> --}}
+@push('scripts')
+    <livewire:scripts />
+@endpush
 
-    <!-- Blog Start -->
-    <div class="container py-4">
-        <div class="row">
-            <!-- Blog Grid Start -->
-            <div class="col-lg-4">
-                <div class="row">
-                    <div class="col-md-12 mb-2">
-                        <div class="bg-secondary p-3" style="padding-top: 20px; height: 350px;">
-                            <div class="row">
-                                <div class="col-2">
-                                    <h5 class="font-weight-bold ">Rooms</h5>
-                                </div>
-                                <div class="col-10">
-                                    <div class="col-12 input-group ">
-                                        <input type="text" id="rooms-search" class="form-control border-0 p-2 ml-4"
-                                            placeholder="Room id">
-                                        <div class="input-group-append">
-                                            <span class="input-group-text bg-primary border-primary text-white"><i
-                                                    class="fa fa-search"></i></span>
-                                        </div>
-                                        <div class="ml-1">
-                                            <button type="button" class="btn btn-primary" data-toggle="modal"
-                                                data-target="#modalTambahRuangan"><i class="fa fa-plus"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="px-4">
-                                <div style="max-height: 450px; overflow-y: auto;">
-                                    <table class="table table-hover w-100 text-left">
-                                        <thead>
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Name</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="room-table-body">
-                                            <!-- Hasil pencarian akan ditampilkan di sini -->
-                                            @if ($rooms->isNotEmpty())
-                                                @foreach ($rooms as $room)
-                                                    <tr>
-                                                        <td>{{ $room->id }}</td>
-                                                        <td>{{ $room->name }}</td>
-                                                        <td><button type="button"
-                                                                class="btn btn-sm btn-transparent rounded-circle"
-                                                                data-toggle="modal" data-target="#modalPassword"><i
-                                                                    class="fa fa-lock"></i></button></td>
-                                                    </tr>
-                                        <!-- Modal masuk ruangan -->
-                                                    <div class="modal fade" id="modalPassword" tabindex="-1" role="dialog"
-                                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                        <div class="modal-dialog" role="document">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="exampleModalLabel">Masuk Ruangan</h5>
-                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                        <span aria-hidden="true">&times;</span>
-                                                                    </button>
-                                                                </div>
-                                                                <form action={{ url('/room/in') }} method="POST" class="flex-grow-1">
-                                                                    @csrf
-                                                                    <input type="hidden" name="room_id" value={{$room->id}}>
-                                                                    <input type="hidden" name="user_id1" value={{ auth()->user()->id }}>
-                                                                    <div class="modal-body bg-secondary">
-                                                                        <div class="control-group">
-                                                                            <input type="text" class="form-control border-0 p-4" id="name"
-                                                                                placeholder="Nama ruangan" readonly name="name" value="{{$room->name}}"
-                                                                                data-validation-required-message="Harap masukkan nama ruangan" />
-                                                                            <p class="help-block text-danger"></p>
-                                                                        </div>
-                                                                        <div class="control-group position-relative">
-                                                                            <input type="text" class="form-control border-0 p-4" id="password"
-                                                                                placeholder="Password" name="password" value="{{ old('[password]') }}" />
-                                                                            {{-- <span id="toggle-password" class="position-absolute"
-                                                                                style="right: 15px; top: 15px; cursor: pointer;">
-                                                                                <i class="fa fa-eye"></i>
-                                                                            </span> --}}
-                                                                            <p class="help-block text-danger"></p>
-                                                                        </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                                                        <button type="submit" class="btn btn-primary">Masuk</button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- End Modal masuk ruangan -->
-
-                                                @endforeach
-                                            @else
-                                                <tr>
-                                                    <td>Kosong</td>
-                                                    <td></td>
-                                                </tr>
-                                            @endif
-                                        </tbody>
-                                    </table>
-                                </div>
-
+<div class="container py-4">
+    <div class="row">
+        <!-- Room List Section -->
+        <div class="col-lg-4 col-md-12 mb-4">
+            <div class="bg-gradient p-4 rounded shadow-lg" style="background: linear-gradient(145deg, #f9f9f9, #e0e0e0); height: 480px; overflow-y: auto; min-height: 480px;">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h5 class="font-weight-bold text-dark">Rooms</h5>
+                    </div>
+                    <div class="col-12">
+                        <!-- Search Input with Icon -->
+                        <div class="input-group">
+                            <input type="text" id="rooms-search" class="form-control border-0 rounded-pill p-2 shadow-sm" placeholder="Search Room ID" style="font-size: 14px; transition: all 0.3s;">
+                            <div class="input-group-append">
+                                <button class="btn btn-transparent border btn-sm rounded-circle ml-2" type="button">
+                                    <i class="fa fa-search" style="font-size: 16px;"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-12 mb-3">
-                        <div class="bg-secondary mb-3" style="padding: 30px;">
-                            <div class="row">
-                                <div class="col-6">
-                                    <h5 class="font-weight-bold mb-3">My room</h5>
-                                </div>
-                            </div>
+                </div>
 
-                            <!-- Wrapper untuk Scroll Horizontal -->
-                            <div class="d-flex overflow-auto" style="white-space: nowrap;">
-                                @foreach ($myRooms as $room)
-                                    <div class="col-md-4 d-inline-block" style="min-width: 250px;">
-                                        <a class="text-decoration-none" href="{{ url('/room/' . $room->id) }}">
-                                            <div class="bg-primary px-3 pt-2 shadow-lg rounded-lg ">
-                                                <h5 class="text-white text-center font-weight-bold text-truncate">
-                                                    {{ $room->name }}</h5>
-                                                <p class="text-white text-right"><small>Room id:
-                                                        <span>{{ $room->id }}</span></small></p>
-                                            </div>
-                                        </a>
-                                    </div>
-                                @endforeach
+                <!-- Table Container with horizontal scroll -->
+                <div class="table-container" style="max-height: 300px; overflow-y: auto; overflow-x: auto;">
+                    <table class="table table-hover table-striped" style="table-layout: fixed; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">ID</th>
+                                <th style="width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Name</th>
+                                <th style="width: 30%; text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dummy data, these rows should be dynamic -->
+                            <tr>
+                                <td>1</td>
+                                <td>Room 1</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Room 2</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Room 3</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Room 4</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Room 5</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>Room 6</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>7</td>
+                                <td>Room 7</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>8</td>
+                                <td>Room 8</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>9</td>
+                                <td>Room 9</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>10</td>
+                                <td>Room 10</td>
+                                <td class="text-center">
+                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Create Room Button -->
+                <div class="text-center mt-4">
+                    <button class="btn btn-success rounded-pill btn-sm py-2 px-4 shadow-lg" 
+                            style="width: 80%;" 
+                            data-toggle="modal" 
+                            data-target="#modalTambahRuangan">
+                        Create Room
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chatroom Section -->
+        <div class="col-lg-8 col-md-12">
+            <div class="bg-gradient p-4 rounded shadow-lg" style="background: linear-gradient(145deg, #e8e8e8, #c9c9c9); height: 480px; min-height: 480px;">
+                <div class="row border-bottom mb-3">
+                    <div class="col-12 d-flex align-items-center">
+                        <h5 class="font-weight-bold text-dark mb-3">Chatroom</h5>
+                    </div>
+                </div>
+
+                <div class="chat-box" style="max-height: 400px; overflow-y: auto; padding: 15px; min-height: 400px;">
+                    <!-- Chat message user 1 (left) -->
+                    <div class="chat-message d-flex mb-3 justify-content-start">
+                        <div class="message-text" style="background-color: #dcf8c6; padding: 12px; border-radius: 15px; max-width: 50%; position: relative;">
+                            <div style="font-size: 13px; color: #4d4d4d;">
+                                <strong>User 1</strong>
                             </div>
+                            <p style="margin: 0; line-height: 1.4em; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: normal;">
+                                Hi there! How are you doing? This is a very long message to demonstrate the ellipsis functionality in action...
+                            </p>
+                            <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">Last 1 hour</span>
+                        </div>
+                    </div>
+
+                    <!-- Chat message user 2 (right) -->
+                    <div class="chat-message d-flex mb-3 justify-content-end">
+                        <div class="message-text" style="background-color: #e0f7fa; padding: 12px; border-radius: 15px; max-width: 50%; position: relative;">
+                            <div style="font-size: 13px; color: #4d4d4d;">
+                                <strong>User 2</strong>
+                            </div>
+                            <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
+                                Hello! I'm good. Thanks for asking. Here's a longer message to show how the overflow works with long text...
+                            </p>
+                            <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">Last 30 minutes</span>
+                        </div>
+                    </div>
+
+                    <!-- Chat message admin (center) -->
+                    <div class="chat-message d-flex mb-3 justify-content-center">
+                        <div class="message-text" style="background-color: #f1f1f1; padding: 12px; border-radius: 15px; max-width: 50%; position: relative;">
+                            <div style="font-size: 13px; color: #4d4d4d;">
+                                <strong>Admin</strong>
+                            </div>
+                            <p style="margin: 0; line-height: 1.4em; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: normal;">
+                                Welcome to the chatroom! Please be respectful and follow the rules. Let me know if you have any questions.
+                            </p>
+                            <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">Last 5 minutes</span>
                         </div>
                     </div>
 
                 </div>
-            </div>
-            <!-- Blog Grid End -->
 
-            <!-- Modal tambah ruangan -->
-            <div class="modal fade" id="modalTambahRuangan" tabindex="-1" role="dialog"
-                aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Buat Ruangan</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
+                <!-- Chat Input Box -->
+                <div class="chat-input mt-4" style="position: relative;">
+                    <div class="input-group bg-secondary px-3 py-2 rounded">
+                        <input type="text" id="message-input" class="form-control border-0 rounded-pill p-3 shadow-sm" placeholder="Type a message..." style="font-size: 14px; transition: all 0.3s;">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary rounded-circle mx-3 shadow-sm" style="height: 45px; width: 45px; padding: 0;">
+                                <i class="fa fa-paper-plane" style="font-size: 20px;"></i>
                             </button>
                         </div>
-                        <form action={{ url('/room/create') }} method="POST" class="flex-grow-1">
-                            @csrf
-                            <input type="hidden" name="user_id1" value={{ auth()->user()->id }}>
-                            <div class="modal-body bg-secondary">
-                                <div class="control-group">
-                                    <input type="text" class="form-control border-0 p-4" id="name"
-                                        placeholder="Nama ruangan" required="required" name="name"
-                                        data-validation-required-message="Harap masukkan nama ruangan" />
-                                    <p class="help-block text-danger"></p>
-                                </div>
-                                <div class="control-group position-relative">
-                                    <input type="text" class="form-control border-0 p-4" id="password"
-                                        placeholder="Password" name="password" value="{{ old('[password]') }}" />
-                                    {{-- <span id="toggle-password" class="position-absolute"
-                                        style="right: 15px; top: 15px; cursor: pointer;">
-                                        <i class="fa fa-eye"></i>
-                                    </span> --}}
-                                    <p class="help-block text-danger"></p>
-                                </div>
-                                <div class="control-group">
-                                    <select name="role_user1" class="custom-select" required>
-                                        <option selected>Pilih peran anda</option>
-                                        <option value="penjual">Penjual</option>
-                                        <option value="pembeli">Pembeli</option>
-                                    </select>
-                                    <p class="help-block text-danger"></p>
-                                </div>
-                                <div class="control-group">
-                                    <select required name="user_id2" class="custom-select select-search" required>
-                                        <option selected value="">Pilih penjual / pembeli</option>
-                                        @foreach ($member as $m)
-                                            <option value={{ $m->id }}>{{ $m->username }}</option>
-                                        @endforeach
-                                    </select>
-                                    <p class="help-block text-danger"></p>
-                                </div>
-                                <div class="control-group">
-                                    <select name="admin_id" class="custom-select" required>
-                                        <option selected>Pilih admin</option>
-                                        @foreach ($admin as $adm)
-                                            <option value={{ $adm->id }}>{{ $adm->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <p class="help-block text-danger"></p>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                                <button type="submit" class="btn btn-primary">Buat ruangan</button>
-                            </div>
-                        </form>
                     </div>
                 </div>
             </div>
-            <!-- End Modal tambah ruangan -->
-
-
-            <!-- Sidebar Start -->
-            <div class="col-lg-8 ">
-                <!-- Search Form Start -->
-                <div class="mb-5">
-                    <div class="bg-secondary" style="padding: 20px; height: 550px;">
-                        <div class="row border-bottom">
-                            <div class="col-4 d-flex align-items-center">
-                                {{-- <h5 class="font-weight-bold mb-3">Transaction</h5> --}}
-                            </div>
-                            <div class="col-8 d-flex align-items-center">
-                                {{-- <h5 class="font-weight-bold mb-3">Akun efef 200k</h5> --}}
-                            </div>
-                        </div>
-
-                        <div>
-                            <!-- Konten lain di sini -->
-                        </div>
-                        <div class="d-flex align-items-end"
-                            style="position: absolute; left: 20px; bottom: 80px; width: 90%;">
-                            {{-- <div class="col-12 input-group ">
-                                <input type="text" id="rooms-search" class="form-control border-1 ml-4 rounded-pill"
-                                    placeholder="Ketik pesan...">
-                                <div class="input-group-append">
-                                    <span class="input-group-text rounded-circle bg-primary border-primary text-white"><i
-                                            class="fa fa-paper-plane"></i></span>
-                                </div>
-                            </div> --}}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Search Form End -->
-            </div>
-            <!-- Sidebar End -->
         </div>
     </div>
-    <!-- Blog End -->
 
-    <script>
-        $('#modalTambahRuangan').on('shown.bs.modal', function() {
-            document.getElementById('toggle-password').addEventListener('click', function() {
-                const passwordField = document.getElementById('password');
-                const icon = this.querySelector('i');
+    <!-- Add Room Modal -->
+    <div class="modal fade" id="modalTambahRuangan" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content rounded-lg shadow-lg border-0">
+                <!-- Modal Header -->
+                <div class="modal-header bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
+                    <h5 class="modal-title text-sm" id="exampleModalLabel">Create Room</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                
+                <!-- Modal Body -->
+                <div class="p-3">
+                    <input type="hidden" name="user_id1" value="1"> <!-- Dummy user ID -->
+                    
+                    <div class="modal-body">
+                        <!-- Room Name -->
+                        <div class="form-group mb-3">
+                            <label for="name" class="font-weight-semibold text-primary text-sm">Room Name</label>
+                            <input type="text" class="form-control form-control-sm rounded-pill p-3 shadow-sm" id="name" placeholder="Enter room name" required name="name" />
+                            <p class="help-block text-danger"></p>
+                        </div>
 
-                if (passwordField.type === 'password') {
-                    passwordField.type = 'text';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                } else {
-                    passwordField.type = 'password';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                }
-            });
-        });
+                        <!-- Password -->
+                        <div class="form-group mb-3">
+                            <label for="password" class="font-weight-semibold text-primary text-sm">Password</label>
+                            <input type="password" class="form-control form-control-sm rounded-pill p-3 shadow-sm" id="password" placeholder="Enter password" name="password" value="password123" />
+                            <p class="help-block text-danger"></p>
+                        </div>
 
-        // Inisialisasi Select2
-        $('#modalTambahRuangan').on('shown.bs.modal', function() {
-            $('.select-search').select2({
-                placeholder: "Pilih peran",
-                allowClear: true
-            });
-        });
+                        <!-- Role Selection -->
+                        <div class="form-group mb-3">
+                            <label for="role_user1" class="font-weight-semibold text-primary text-sm">Select Role</label>
+                            <select name="role_user1" class="custom-select form-control-sm rounded-pill shadow-sm" required>
+                                <option selected disabled>Select your role</option>
+                                <option value="seller">Seller</option>
+                                <option value="buyer">Buyer</option>
+                            </select>
+                            <p class="help-block text-danger"></p>
+                        </div>
 
-        document.getElementById('rooms-search').addEventListener('input', function() {
-            const query = this.value;
+                        <!-- User Selection -->
+                        <div class="form-group mb-3">
+                            <label for="user_id2" class="font-weight-semibold text-primary text-sm">Select Seller / Buyer</label>
+                            <select name="user_id2" class="custom-select form-control-sm rounded-pill shadow-sm" required>
+                                <option selected disabled>Select seller / buyer</option>
+                                <option value="1">User 1</option>
+                                <option value="2">User 2</option>
+                                <option value="3">User 3</option>
+                            </select>
+                            <p class="help-block text-danger"></p>
+                        </div>
 
-            fetch(`/search-rooms?query=${query}`)
-                .then(response => response.json())
-                .then(data => {
-                    let tableBody = document.getElementById('room-table-body');
-                    tableBody.innerHTML = ''; // Bersihkan hasil sebelumnya
+                        <!-- Admin Selection -->
+                        <div class="form-group mb-3">
+                            <label for="admin_id" class="font-weight-semibold text-primary text-sm">Select Admin</label>
+                            <select name="admin_id" class="custom-select form-control-sm rounded-pill shadow-sm" required>
+                                <option selected disabled>Select admin</option>
+                                <option value="1">Admin 1</option>
+                                <option value="2">Admin 2</option>
+                            </select>
+                            <p class="help-block text-danger"></p>
+                        </div>
+                    </div>
 
-                    // Perulangan hasil pencarian dan tampilkan di tabel
-                    data.forEach(room => {
-                        const row = `<tr><td>${room.id}</td><td>${room.name}</td><td>masuk</td></tr>`;
-                        tableBody.innerHTML += row;
-                    });
-                })
-                .catch(error => console.error('Error:', error));
-        });
+                    <!-- Modal Footer -->
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4 py-2" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 py-2">Create Room</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Add Room Modal -->
 
-
-    </script>
-@endsection
+</div>

@@ -29,6 +29,7 @@
     <link href={{ url('css/style.css') }} rel="stylesheet">
     @vite('resources/js/app.js')
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @stack('styles')
 </head>
 
 <body>
@@ -102,7 +103,7 @@
     <!-- Template Javascript -->
     <script src={{ url('js/main.js') }}></script>
 
-
+    @stack('scripts')
 
 </body>
 
