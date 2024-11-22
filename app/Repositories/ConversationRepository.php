@@ -27,10 +27,6 @@ class ConversationRepository extends ConversationAdminRepository
      */
     public function setRoom(Room $room): void
     {
-        if ($room->owner->id !== $this->getUser()->id) {
-            throw new ModelNotFoundException('User not owned.');
-        }
-
         $this->room = $room;
     }
 

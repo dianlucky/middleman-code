@@ -77,7 +77,6 @@ class ConversationService extends Service
     {
         Validator::make($datas, [
             'room_id' => ['required', 'exists:rooms,id'],
-            'user_sender_id' => ['required', 'exists:users,id'],
             'user_receiver_id' => ['required', 'exists:users,id'],
             'message' => ['required', 'string'],
         ])->validate();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\User;
 use App\Repositories\RoomAdminRepository;
 use App\Services\RoomAdminService;
@@ -12,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
 
 class ChatController extends Controller
 {
@@ -41,9 +43,10 @@ class ChatController extends Controller
 
     /**
      * @param Request $request
+     * @param int|string $id
      * @return View
      */
-    public function index(Request $request): View
+    public function index(Request $request, $id = null): View
     {
         $title = 'Transaction | MiddleMan';
         $roomSearch = (int) $request->query('roomSearch', 0);
@@ -53,7 +56,7 @@ class ChatController extends Controller
         $members = User::whereKeyNot(auth()->id())->where('role', 'member')->get();
         $rooms = $this->roomService->index([ 'id' => $roomSearch, ])->getData();
 
-        return view('userview.transaction')->with
+        $view = view('userview.transaction')->with
         (
             compact(
 
@@ -64,6 +67,30 @@ class ChatController extends Controller
                 'rooms'
             )
         );
+
+        if ($id) {
+
+            $data_room = [];
+            $data_conversations = [];
+
+            try {
+
+                $data_room = $this->roomService->show([ 'id' => $id, ])->getData();
+                $data_conversations = $this->conversationService->index([ 'room_id' => $id, ])->getData();
+
+            } catch (Exception $thrower) {
+
+                Log::debug($thrower);
+            }
+
+            $view->with(compact(
+
+                'data_room',
+                'data_conversations'
+            ));
+        }
+
+        return $view;
     }
 
     /**
@@ -74,9 +101,9 @@ class ChatController extends Controller
     {
         $roomData = [
 
-            'owner_role' => $request->role_user1,
-            'inviter_id' => (int) $request->user_id2,
-            'admin_id' => (int) $request->admin_id,
+            'owner_role' => $request->room_role_user1,
+            'inviter_id' => (int) $request->room_user_id2,
+            'admin_id' => (int) $request->room_admin_id,
             'room_name' => $request->room_name,
             'room_password' => $request->room_password,
         ];
@@ -94,7 +121,7 @@ class ChatController extends Controller
     {
         $roomData = [
 
-            'id' => $request->id,
+            'id' => (int) $request->id,
         ];
 
         $this->roomService->destroy($roomData);
@@ -110,7 +137,7 @@ class ChatController extends Controller
     {
         $roomData = [
 
-            'id' => $request->id,
+            'id' => (int) $request->id,
         ];
 
         $this->roomService->join($roomData);
@@ -126,11 +153,46 @@ class ChatController extends Controller
     {
         $roomData = [
 
-            'id' => $request->id,
+            'id' => (int) $request->id,
         ];
 
         $this->roomService->leave($roomData);
 
         return redirect()->route('transaction.index');
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function storeConversation(Request $request): RedirectResponse
+    {
+        $conversationData = [
+
+            'room_id' => (int) $request->conversation_room_id,
+            'user_receiver_id' => (int) $request->conversation_receiver_id,
+            'message' => $request->conversation_message,
+        ];
+
+        $this->conversationService->store($conversationData);
+
+        return redirect()->back();
+    }
+
+    /**
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function destroyConversation(Request $request): RedirectResponse
+    {
+        $conversationData = [
+
+            'id' => (int) $request->id,
+            'room_id' => (int) $request->conversation_room_id,
+        ];
+
+        $this->conversationService->destroy($roomData);
+
+        return redirect()->back();
     }
 }

@@ -86,14 +86,4 @@ class Conversation extends Model
 
         return null;
     }
-
-    /**
-     * @return void
-     */
-    protected static function booted(): void
-    {
-        static::addGlobalScope('default', function (Builder $builder) {
-            $builder->latest();
-        });
-    }
 }

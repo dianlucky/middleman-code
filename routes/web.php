@@ -28,11 +28,15 @@ Route::get('/contact', action: [HomepageController::class, 'contact']);
 
 Route::prefix('transaction')->middleware('auth')->group(function()
 {
-    Route::get('/', [ChatController::class, 'index'])->name('transaction.index');
+    Route::get('/{id?}', [ChatController::class, 'index'])->name('transaction.index');
+
     Route::post('/room', [ChatController::class, 'storeRoom'])->name('transaction.room.store');
     Route::put('/room/join/{id}', [ChatController::class, 'joinRoom'])->name('transaction.room.join');
     Route::put('/room/leave/{id}', [ChatController::class, 'leaveRoom'])->name('transaction.room.leave');
     Route::delete('/room/{id}', [ChatController::class, 'destroyRoom'])->name('transaction.room.destroy');
+
+    Route::post('/conversation', [ChatController::class, 'storeConversation'])->name('transaction.conversation.store');
+    Route::delete('/conversation/{id}', [ChatController::class, 'destroyConversation'])->name('transaction.conversation.destroy');
 });
 
 Route::post('/send-message', [ConversationController::class, 'sendMessage'])->middleware('auth');

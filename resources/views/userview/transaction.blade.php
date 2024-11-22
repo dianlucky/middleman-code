@@ -12,10 +12,10 @@
                         </div>
                         <div class="col-12">
                             <!-- Search Input with Icon -->
-                            <form method="GET" action="{{ route('transaction.index') }}" class="d-flex">
+                            <form method="get" action="{{ route('transaction.index') }}" class="d-flex">
                                 @csrf
                                 <div class="input-group">
-                                    <input type="text" id="rooms-search" name="roomSearch" class="form-control border-0 rounded-pill p-2 shadow-sm" placeholder="Search Room ID" style="font-size: 14px; transition: all 0.3s;">
+                                    <input name="roomSearch" type="text" id="rooms-search" class="form-control border-0 rounded-pill p-2 shadow-sm" placeholder="Search Room Id" style="font-size: 14px; transition: all 0.3s;">
                                     <div class="input-group-append">
                                         <button class="btn btn-transparent border btn-sm rounded-circle ml-2" type="submit">
                                             <i class="fa fa-search" style="font-size: 16px;"></i>
@@ -37,29 +37,37 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($rooms as $room)
-                                    <tr>
+                                @foreach ($rooms as $room)
+                                    <tr style="cursor: pointer;" onclick="window.location.href='{{ route('transaction.index', ['id' => $room->id]) }}'">
                                         <td>{{ $room->id }}</td>
                                         <td>{{ $room->name }}</td>
                                         <td class="text-center">
                                             @if ($room->user_id1 === auth()->id())
-                                                <form method="POST" action="{{ route('transaction.room.destroy', ['id' => $room->id]) }}" class="d-flex">
+                                                <form method="post" action="{{ route('transaction.room.destroy', ['id' => $room->id]) }}" class="d-flex">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="btn btn-outline-danger btn-sm rounded py-1 px-2 shadow-sm">Close</button>
+                                                    <button class="btn btn-danger btn-sm rounded py-1 px-2 shadow-sm">Close</button>
                                                 </form>
                                             @elseif ($room->user_id2 === auth()->id() && $room->status_user2 === \App\Repositories\RoomAdminRepository::$INVITER_STATUS_LEAVED)
-                                                <form method="POST" action="{{ route('transaction.room.join', ['id' => $room->id]) }}" class="d-flex">
+                                                <form method="post" action="{{ route('transaction.room.join', ['id' => $room->id]) }}" class="d-flex">
                                                     @csrf
                                                     @method('PUT')
-                                                    <button class="btn btn-outline-success btn-sm rounded py-1 px-2 shadow-sm">Join</button>
+                                                    <button class="btn btn-success btn-sm rounded py-1 px-2 shadow-sm">Join</button>
                                                 </form>
                                             @elseif ($room->user_id2 === auth()->id() && $room->status_user2 === \App\Repositories\RoomAdminRepository::$INVITER_STATUS_JOINED)
-                                                <form method="POST" action="{{ route('transaction.room.leave', ['id' => $room->id]) }}" class="d-flex">
+                                                <form method="post" action="{{ route('transaction.room.leave', ['id' => $room->id]) }}" class="d-flex">
                                                     @csrf
                                                     @method('PUT')
-                                                    <button class="btn btn-outline-warning btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
+                                                    <button class="btn btn-warning btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
                                                 </form>
+                                            @else
+                                                <button class="btn btn-secondary btn-sm rounded py-1 px-2" disabled>
+                                                    @if ($room->admin_id === auth()->id())
+                                                        <i class="fa fa-users-cog"></i>
+                                                    @else
+                                                        <i class="fa fa-lock"></i>
+                                                    @endif
+                                                </button>
                                             @endif
                                         </td>
                                     </tr>
@@ -85,63 +93,85 @@
                 <div class="bg-gradient p-4 rounded shadow-lg" style="background: linear-gradient(145deg, #e8e8e8, #c9c9c9); height: 480px; min-height: 480px;">
                     <div class="row border-bottom mb-3">
                         <div class="col-12 d-flex align-items-center">
-                            <h5 class="font-weight-bold text-dark mb-3">Chatroom</h5>
+                            <h5 class="font-weight-bold text-dark mb-3">
+                                @if (@$data_room->id)
+                                    {{ '#'.@$data_room->id }}
+                                @endif
+                            </h5>
                         </div>
                     </div>
 
                     <div class="chat-box" style="max-height: 400px; overflow-y: auto; padding: 15px; min-height: 400px;">
-                        <!-- Chat message user 1 (left) -->
-                        <div class="chat-message d-flex mb-3 justify-content-start">
-                            <div class="message-text" style="background-color: #dcf8c6; padding: 12px; border-radius: 15px; max-width: 50%; position: relative;">
-                                <div style="font-size: 13px; color: #4d4d4d;">
-                                    <strong>User 1</strong>
+                        @if (isset ($data_conversations))
+                            @forelse ($data_conversations as $conversation)
+                            @if ($conversation->user_sender_id === auth()->id())
+                                <div class="chat-message d-flex mb-3 justify-content-start">
+                                    <div class="message-text" style="background-color: #dcf8c6; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                        <div style="font-size: 13px; color: #4d4d4d;">
+                                            <strong>{{ $conversation->sender->username }}</strong>
+                                        </div>
+                                        <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
+                                            {{ $conversation->message }}
+                                        </p>
+                                        <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
+                                            {{ \Carbon\Carbon::parse($conversation->created_at)->diffForHumans() }}
+                                        </span>
+                                    </div>
                                 </div>
-                                <p style="margin: 0; line-height: 1.4em; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: normal;">
-                                    Hi there! How are you doing? This is a very long message to demonstrate the ellipsis functionality in action...
-                                </p>
-                                <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">Last 1 hour</span>
-                            </div>
-                        </div>
+                            @else
+                                @if ($conversation->sender->role === "member")
+                                    <div class="chat-message d-flex mb-3 justify-content-end">
+                                        <div class="message-text" style="background-color: #e0f7fa; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                            <div style="font-size: 13px; color: #4d4d4d;">
+                                                <strong>{{ $conversation->sender->username }}</strong>
+                                            </div>
+                                            <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
+                                                {{ $conversation->message }}
+                                            </p>
+                                            <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
+                                                {{ \Carbon\Carbon::parse($conversation->created_at)->diffForHumans() }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @elseif ($conversation->sender->role === "admin")
+                                    <div class="chat-message d-flex mb-3 justify-content-center">
+                                        <div class="message-text" style="background-color: #f1f1f1; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                            <div style="font-size: 13px; color: #4d4d4d;">
+                                                <strong>Admin</strong>
+                                            </div>
+                                            <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
+                                                {{ $conversation->message }}
+                                            </p>
+                                            <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
+                                                {{ \Carbon\Carbon::parse($conversation->created_at)->diffForHumans() }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endif
+                            @endif
 
-                        <!-- Chat message user 2 (right) -->
-                        <div class="chat-message d-flex mb-3 justify-content-end">
-                            <div class="message-text" style="background-color: #e0f7fa; padding: 12px; border-radius: 15px; max-width: 50%; position: relative;">
-                                <div style="font-size: 13px; color: #4d4d4d;">
-                                    <strong>User 2</strong>
-                                </div>
-                                <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
-                                    Hello! I'm good. Thanks for asking. Here's a longer message to show how the overflow works with long text...
-                                </p>
-                                <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">Last 30 minutes</span>
-                            </div>
-                        </div>
-
-                        <!-- Chat message admin (center) -->
-                        <div class="chat-message d-flex mb-3 justify-content-center">
-                            <div class="message-text" style="background-color: #f1f1f1; padding: 12px; border-radius: 15px; max-width: 50%; position: relative;">
-                                <div style="font-size: 13px; color: #4d4d4d;">
-                                    <strong>Admin</strong>
-                                </div>
-                                <p style="margin: 0; line-height: 1.4em; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: normal;">
-                                    Welcome to the chatroom! Please be respectful and follow the rules. Let me know if you have any questions.
-                                </p>
-                                <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">Last 5 minutes</span>
-                            </div>
-                        </div>
-
+                            @empty
+                                <p class="text-center">Empty conversation.</p>
+                            @endforelse
+                        @else
+                            <p class="text-center">You are not in a room or you may not be authorized to enter this room.</p>
+                        @endif
                     </div>
 
                     <!-- Chat Input Box -->
-                    <div class="chat-input mt-4" style="position: relative;">
+                    <form method="post" action="{{ route('transaction.conversation.store') }}" class="chat-input mt-5" style="position: relative;">
+                        @csrf
                         <div class="input-group bg-secondary px-3 py-2 rounded">
-                            <input type="text" id="message-input" class="form-control border-0 rounded-pill p-3 shadow-sm" placeholder="Type a message..." style="font-size: 14px; transition: all 0.3s;">
+                            <input name="conversation_room_id" type="hidden" value="{{ @$data_room->id }}">
+                            <input name="conversation_receiver_id" type="hidden" value="{{ @$data_room->inviter->id }}">
+                            <input @if (! @$data_room) disabled @endif name="conversation_message" type="text" id="message-input" class="form-control border-0 rounded-pill p-3 shadow-sm" placeholder="@if (@$data_room) Type a message... @endif" style="font-size: 14px; transition: all 0.3s;">
                             <div class="input-group-append">
-                                <button class="btn btn-primary rounded-circle mx-3 shadow-sm" style="height: 45px; width: 45px; padding: 0;">
+                                <button @if (! @$data_room) disabled @endif type="submit" class="btn btn-primary rounded-circle mx-3 shadow-sm" style="height: 45px; width: 45px; padding: 0;">
                                     <i class="fa fa-paper-plane" style="font-size: 20px;"></i>
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -161,13 +191,12 @@
                     <!-- Modal Body -->
                     <form method="post" action="{{ route('transaction.room.store') }}" class="p-3">
                         @csrf
-                        <!-- <input type="hidden" name="user_id1" value="{{ auth()->id() }}"> -->
 
                         <div class="modal-body">
                             <!-- Room Name -->
                             <div class="form-group mb-3">
                                 <label for="name" class="font-weight-semibold text-primary text-sm">Room Name</label>
-                                <input type="text" class="form-control form-control-sm rounded-pill p-3 shadow-sm" id="name" placeholder="Enter room name" required name="room_name" />
+                                <input name="room_name" type="text" class="form-control form-control-sm rounded-pill p-3 shadow-sm" id="name" placeholder="Enter room name" required />
                                 @error('room_name')
                                     <p class="help-block text-danger">{{ $message }}</p>
                                 @enderror
@@ -176,7 +205,7 @@
                             <!-- Password -->
                             <div class="form-group mb-3">
                                 <label for="password" class="font-weight-semibold text-primary text-sm">Password</label>
-                                <input type="password" class="form-control form-control-sm rounded-pill p-3 shadow-sm" id="password" placeholder="Enter password" name="room_password" />
+                                <input name="room_password" type="password" class="form-control form-control-sm rounded-pill p-3 shadow-sm" id="password" placeholder="Enter password" required />
                                 @error('room_password')
                                     <p class="help-block text-danger">{{ $message }}</p>
                                 @enderror
@@ -184,10 +213,10 @@
 
                             <!-- Role Selection -->
                             <div class="form-group mb-3">
-                                <label for="role_user1" class="font-weight-semibold text-primary text-sm">Select Role</label>
-                                <select name="role_user1" class="custom-select form-control-sm rounded-pill shadow-sm" required>
+                                <label for="room_role_user1" class="font-weight-semibold text-primary text-sm">Select Role</label>
+                                <select name="room_role_user1" class="custom-select form-control-sm rounded-pill shadow-sm" required>
                                     <!-- <option selected disabled>Select your role</option> -->
-                                    @foreach($roles as $role)
+                                    @foreach ($roles as $role)
                                         <option value="{{ $role }}">{{ ucfirst($role) }}</option>
                                     @endforeach
                                 </select>
@@ -196,10 +225,10 @@
 
                             <!-- User Selection -->
                             <div class="form-group mb-3">
-                                <label for="user_id2" class="font-weight-semibold text-primary text-sm">Select Seller / Buyer</label>
-                                <select name="user_id2" class="custom-select form-control-sm rounded-pill shadow-sm" required>
+                                <label for="room_user_id2" class="font-weight-semibold text-primary text-sm">Select Seller / Buyer</label>
+                                <select name="room_user_id2" class="custom-select form-control-sm rounded-pill shadow-sm" required>
                                     <!-- <option selected disabled>Select seller / buyer</option> -->
-                                    @foreach($members as $member)
+                                    @foreach ($members as $member)
                                         <option value="{{ $member->id }}">{{ $member->name }}</option>
                                     @endforeach
                                 </select>
@@ -208,10 +237,10 @@
 
                             <!-- Admin Selection -->
                             <div class="form-group mb-3">
-                                <label for="admin_id" class="font-weight-semibold text-primary text-sm">Select Admin</label>
-                                <select name="admin_id" class="custom-select form-control-sm rounded-pill shadow-sm" required>
+                                <label for="room_admin_id" class="font-weight-semibold text-primary text-sm">Select Admin</label>
+                                <select name="room_admin_id" class="custom-select form-control-sm rounded-pill shadow-sm" required>
                                     <!-- <option selected disabled>Select admin</option> -->
-                                    @foreach($admins as $admin)
+                                    @foreach ($admins as $admin)
                                         <option value="{{ $admin->id }}">{{ $admin->name }}</option>
                                     @endforeach
                                 </select>

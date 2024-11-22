@@ -23,7 +23,9 @@ class RoomRepository extends RoomAdminRepository
 
         $query = Room::where('status', '=', self::$STATUS_ONGOING)
             ->where(function ($query) use ($status) {
-                $query->orWhere('user_id1', '=', $this->getUser()->id)
+                $query
+                    ->orWhere('admin_id', '=', $this->getUser()->id)
+                    ->orWhere('user_id1', '=', $this->getUser()->id)
                     ->orWhere(function ($query) use ($status) {
                         $query->where('user_id2', '=', $this->getUser()->id)
                             ->where('status_user2', '=', $status);
@@ -46,7 +48,9 @@ class RoomRepository extends RoomAdminRepository
         return parent::accessGet(
             fn() => Room::where('status', '=', self::$STATUS_ONGOING)
                 ->where(function ($query) {
-                    $query->orWhere('user_id1', '=', $this->getUser()->id)
+                    $query
+                        ->orWhere('admin_id', '=', $this->getUser()->id)
+                        ->orWhere('user_id1', '=', $this->getUser()->id)
                         ->orWhere(function ($query) {
                             $query->where('user_id2', '=', $this->getUser()->id)
                                   ->where('status_user2', '=', self::$INVITER_STATUS_JOINED);
