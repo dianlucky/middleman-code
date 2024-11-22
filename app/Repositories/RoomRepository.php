@@ -19,24 +19,22 @@ class RoomRepository extends RoomAdminRepository
      */
     public function all(int|string $id = 0)
     {
-        if (! $id) {
-            return parent::accessAll(
-                fn() => Room::where(function ($query) {
-                    $query->where('status', '=', self::$STATUS_ONGOING)
-                            ->orWhere('user_id1', '=', $this->getUser()->id)
-                            ->orWhere('user_id2', '=', $this->getUser()->id);
-                })->get()
-            );
-        } else {
-            return parent::accessAll(
-                fn() => Room::where(function ($query) {
-                    $query->where('status', '=', self::$STATUS_ONGOING)
-                            ->where('id', 'like', '%'.$id.'%')
-                            ->orWhere('user_id1', '=', $this->getUser()->id)
-                            ->orWhere('user_id2', '=', $this->getUser()->id);
-                })->get()
-            );
+        $status = $id ? self::$INVITER_STATUS_LEAVED : self::$INVITER_STATUS_JOINED;
+
+        $query = Room::where('status', '=', self::$STATUS_ONGOING)
+            ->where(function ($query) use ($status) {
+                $query->orWhere('user_id1', '=', $this->getUser()->id)
+                    ->orWhere(function ($query) use ($status) {
+                        $query->where('user_id2', '=', $this->getUser()->id)
+                            ->where('status_user2', '=', $status);
+                    });
+            });
+
+        if ($id) {
+            $query->where('id', 'like', '%'.$id.'%');
         }
+
+        return parent::accessAll(fn() => $query->get());
     }
 
     /**
@@ -46,12 +44,16 @@ class RoomRepository extends RoomAdminRepository
     public function get(int|string $id): ?Room
     {
         return parent::accessGet(
-            fn() => Room::where(function ($query) use ($id) {
-                $query->where('status', '=', self::$STATUS_ONGOING)
-                ->orWhere('user_id1', '=', $this->getUser()->id)
-                ->orWhere('user_id2', '=', $this->getUser()->id)
-                ->where('id', '=', $id);
-            })->firstOrFail()
+            fn() => Room::where('status', '=', self::$STATUS_ONGOING)
+                ->where(function ($query) {
+                    $query->orWhere('user_id1', '=', $this->getUser()->id)
+                        ->orWhere(function ($query) {
+                            $query->where('user_id2', '=', $this->getUser()->id)
+                                  ->where('status_user2', '=', self::$INVITER_STATUS_JOINED);
+                        });
+                })
+                ->where('id', '=', $id)
+                ->firstOrFail()
         );
     }
 

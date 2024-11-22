@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\AdminPageController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\ChatController;
 use App\Models\Conversation;
 
 /*
@@ -27,7 +28,11 @@ Route::get('/contact', action: [HomepageController::class, 'contact']);
 
 Route::prefix('transaction')->middleware('auth')->group(function()
 {
-    Route::get('/', \App\Livewire\Chat::class);
+    Route::get('/', [ChatController::class, 'index'])->name('transaction.index');
+    Route::post('/room', [ChatController::class, 'storeRoom'])->name('transaction.room.store');
+    Route::put('/room/join/{id}', [ChatController::class, 'joinRoom'])->name('transaction.room.join');
+    Route::put('/room/leave/{id}', [ChatController::class, 'leaveRoom'])->name('transaction.room.leave');
+    Route::delete('/room/{id}', [ChatController::class, 'destroyRoom'])->name('transaction.room.destroy');
 });
 
 Route::post('/send-message', [ConversationController::class, 'sendMessage'])->middleware('auth');

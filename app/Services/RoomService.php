@@ -64,11 +64,41 @@ class RoomService extends Service
      * @param array $datas
      * @return JsonResponse
      */
+    public function join(array $datas): JsonResponse
+    {
+        Validator::make($datas, [
+            "id" => ["required", Rule::exists(Room::class)],
+        ])->validate();
+
+        $room = $this->roomRepository->join($datas["id"]);
+
+        return response()->json($room, 200);
+    }
+
+    /**
+     * @param array $datas
+     * @return JsonResponse
+     */
+    public function leave(array $datas): JsonResponse
+    {
+        Validator::make($datas, [
+            "id" => ["required", Rule::exists(Room::class)],
+        ])->validate();
+
+        $room = $this->roomRepository->leave($datas["id"]);
+
+        return response()->json($room, 200);
+    }
+
+    /**
+     * @param array $datas
+     * @return JsonResponse
+     */
     public function store(array $datas): JsonResponse
     {
         Validator::make($datas, [
             "room_name" => ["required", "string", "min:1", "max:255"],
-            "room_password" => ["nullable", "string", "min:8"],
+            "room_password" => ["nullable", "string", "min:3"],
             "room_status" => ["nullable", "string"],
         ])->validate();
 
