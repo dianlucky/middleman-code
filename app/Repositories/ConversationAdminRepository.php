@@ -50,6 +50,8 @@ class ConversationAdminRepository extends Repository
             $conversation->message = $data['message'];
             $conversation->save();
 
+            $conversation->load(['room', 'sender', 'receiver']);
+
             return $conversation;
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Closure;
 use App\Events\User\RoomCreated;
 use App\Events\User\RoomUpdated;
 use App\Events\User\RoomDeleted;
@@ -10,6 +11,7 @@ use App\Repositories\RoomRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * @method JsonResponse index()
@@ -40,7 +42,7 @@ class RoomService extends Service
      */
     public function index(array $datas = []): JsonResponse
     {
-        $roomId = $datas['id'] ?? 0;
+        $roomId = $datas["id"] ?? 0;
         $rooms = $this->roomRepository->all($roomId);
         return response()->json($rooms, 200);
     }
@@ -67,7 +69,15 @@ class RoomService extends Service
     public function join(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            "id" => ["required", Rule::exists(Room::class)],
+            "id" => ["required", Rule::exists(Room::class, "id")],
+            "password" => ["required", function ($attribute, $value, Closure $fail) use ($datas) {
+                $room = Room::find($datas["id"]);
+                if (!$room) {
+                    $fail("The specified room does not exist.");
+                } elseif (!Hash::check($value, $room->password)) {
+                    $fail("The password is incorrect for the specified room.");
+                }
+            }],
         ])->validate();
 
         $room = $this->roomRepository->join($datas["id"]);

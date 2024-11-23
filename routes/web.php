@@ -28,8 +28,9 @@ Route::get('/contact', action: [HomepageController::class, 'contact']);
 
 Route::prefix('transaction')->middleware('auth')->group(function()
 {
-    Route::get('/{id?}', [ChatController::class, 'index'])->name('transaction.index');
+    Route::get('/', [ChatController::class, 'index'])->name('transaction.index');
 
+    Route::get('/room/{id?}', [ChatController::class, 'showRoom'])->name('transaction.room.show');
     Route::post('/room', [ChatController::class, 'storeRoom'])->name('transaction.room.store');
     Route::put('/room/join/{id}', [ChatController::class, 'joinRoom'])->name('transaction.room.join');
     Route::put('/room/leave/{id}', [ChatController::class, 'leaveRoom'])->name('transaction.room.leave');

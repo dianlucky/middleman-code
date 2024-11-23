@@ -12,6 +12,7 @@ use App\Services\ConversationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Log;
 
@@ -42,62 +43,55 @@ class ChatController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @param int|string $id
-     * @return View
+     * @param Illuminate\Http\Request $request
+     * @return \Illuminate\View\View
      */
-    public function index(Request $request, $id = null): View
+    public function index(Request $request): View
     {
         $title = 'Transaction | MiddleMan';
-        $roomSearch = (int) $request->query('roomSearch', 0);
 
-        $roles = [ RoomAdminRepository::$ROLE_SELLER, RoomAdminRepository::$ROLE_BUYER, ];
-        $admins = User::where('role', 'admin')->get();
-        $members = User::whereKeyNot(auth()->id())->where('role', 'member')->get();
-        $rooms = $this->roomService->index([ 'id' => $roomSearch, ])->getData();
-
-        $view = view('userview.transaction')->with
-        (
-            compact(
-
-                'title',
-                'roles',
-                'admins',
-                'members',
-                'rooms'
-            )
-        );
-
-        if ($id) {
-
-            $data_room = [];
-            $data_conversations = [];
-
-            try {
-
-                $data_room = $this->roomService->show([ 'id' => $id, ])->getData();
-                $data_conversations = $this->conversationService->index([ 'room_id' => $id, ])->getData();
-
-            } catch (Exception $thrower) {
-
-                Log::debug($thrower);
-            }
-
-            $view->with(compact(
-
-                'data_room',
-                'data_conversations'
-            ));
-        }
-
-        return $view;
+        return view('userview.transaction')->with(compact('title'));
     }
 
     /**
-     * @param Request $request
-     * @return RedirectResponse
+     * @param Illuminate\Http\Request $request
+     * @param int|string $id
+     * @return Illuminate\Http\JsonResponse
      */
-    public function storeRoom(Request $request): RedirectResponse
+    public function showRoom(Request $request, $id = 0): JsonResponse
+    {
+        $rooms = $this->roomService->index([ 'id' => $id, ])->getData();
+
+        if (! $id) {
+
+            $authId = auth()->id();
+            $admins = User::where('role', 'admin')->get();
+            $members = User::whereKeyNot(auth()->id())->where('role', 'member')->get();
+
+            $data = compact(
+
+                'authId',
+                'admins',
+                'members',
+                'rooms'
+            );
+
+        } else {
+
+            $data = compact(
+
+                'rooms'
+            );
+        }
+
+        return response()->json($data);
+    }
+
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function storeRoom(Request $request): JsonResponse
     {
         $roomData = [
 
@@ -108,64 +102,65 @@ class ChatController extends Controller
             'room_password' => $request->room_password,
         ];
 
-        $this->roomService->store($roomData);
+        $data = $this->roomService->store($roomData);
 
-        return redirect()->back();
+        return response()->json($data);
     }
 
     /**
-     * @param Request $request
-     * @return RedirectResponse
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Http\JsonResponse
      */
-    public function destroyRoom(Request $request): RedirectResponse
+    public function destroyRoom(Request $request): JsonResponse
     {
         $roomData = [
 
             'id' => (int) $request->id,
         ];
 
-        $this->roomService->destroy($roomData);
+        $data = $this->roomService->destroy($roomData);
 
-        return redirect()->back();
+        return response()->json($data);
     }
 
     /**
-     * @param Request $request
-     * @return RedirectResponse
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Http\JsonResponse
      */
-    public function joinRoom(Request $request): RedirectResponse
+    public function joinRoom(Request $request): JsonResponse
+    {
+        $roomData = [
+
+            'id' => (int) $request->id,
+            'password' => $request->password,
+        ];
+
+        $data = $this->roomService->join($roomData);
+
+        return response()->json($data);
+    }
+
+    /**
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function leaveRoom(Request $request): JsonResponse
     {
         $roomData = [
 
             'id' => (int) $request->id,
         ];
 
-        $this->roomService->join($roomData);
+        $data = $this->roomService->leave($roomData);
 
-        return redirect()->route('transaction.index');
+        return response()->json($data);
     }
 
     /**
-     * @param Request $request
-     * @return RedirectResponse
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Http\JsonResponse
      */
-    public function leaveRoom(Request $request): RedirectResponse
-    {
-        $roomData = [
-
-            'id' => (int) $request->id,
-        ];
-
-        $this->roomService->leave($roomData);
-
-        return redirect()->route('transaction.index');
-    }
-
-    /**
-     * @param Request $request
-     * @return RedirectResponse
-     */
-    public function storeConversation(Request $request): RedirectResponse
+    public function storeConversation(Request $request): JsonResponse
     {
         $conversationData = [
 
@@ -174,16 +169,16 @@ class ChatController extends Controller
             'message' => $request->conversation_message,
         ];
 
-        $this->conversationService->store($conversationData);
+        $data = $this->conversationService->store($conversationData);
 
-        return redirect()->back();
+        return response()->json($data);
     }
 
     /**
-     * @param Request $request
-     * @return RedirectResponse
+     * @param Illuminate\Http\Request $request
+     * @return Illuminate\Http\JsonResponse
      */
-    public function destroyConversation(Request $request): RedirectResponse
+    public function destroyConversation(Request $request): JsonResponse
     {
         $conversationData = [
 
@@ -191,8 +186,8 @@ class ChatController extends Controller
             'room_id' => (int) $request->conversation_room_id,
         ];
 
-        $this->conversationService->destroy($roomData);
+        $data = $this->conversationService->destroy($roomData);
 
-        return redirect()->back();
+        return response()->json($data);
     }
 }

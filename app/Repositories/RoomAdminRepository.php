@@ -83,7 +83,7 @@ class RoomAdminRepository extends Repository
             $model = new Room();
             $model->id = $model->generateRoomId();
             $model->name = $data['room_name'];
-            $model->password = $data['room_password'];
+            $model->password = Hash::make($data['room_password']);
             $model->status = $data['room_status'] ?? self::$STATUS_ONGOING;
             $model->owner()->associate($owner);
             $model->role_user1 = $data['owner_role'];

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+use App\Models\Room;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -18,5 +20,6 @@ Broadcast::channel('room.{user_inviter_id}', function ($user, $user_inviter_id) 
 });
 
 Broadcast::channel('conversation.{user_receiver_id}.{room_id}', function ($user, $user_receiver_id, $room_id) {
-    return (int) $user->id === (int) $user_receiver_id;
+    return (int) $user->id === (int) $user_receiver_id ||
+           (int) $user_receiver_id === (int) @Room::find($room_id)->admin->id;
 });
