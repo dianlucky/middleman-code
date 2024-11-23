@@ -79,7 +79,7 @@
                             <div v-if="eachConversation.user_sender_id === authId" class="chat-message d-flex mb-3 justify-content-start">
                                 <div class="message-text" style="background-color: #dcf8c6; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
                                     <div style="font-size: 13px; color: #4d4d4d;">
-                                        <strong>{{ eachConversation.sender.username }}</strong>
+                                        <strong>{{ eachConversation.sender.username }} ({{eachConversation.sender_role ?? 'admin'}})</strong>
                                     </div>
                                     <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
                                         {{ eachConversation.message }}
@@ -93,7 +93,7 @@
                                 <div v-if="eachConversation.sender.role === 'member'" class="chat-message d-flex mb-3 justify-content-end">
                                     <div class="message-text" style="background-color: #e0f7fa; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
                                         <div style="font-size: 13px; color: #4d4d4d;">
-                                            <strong>{{ eachConversation.sender.username }}</strong>
+                                            <strong>{{ eachConversation.sender.username }} ({{eachConversation.sender_role ?? 'admin'}})</strong>
                                         </div>
                                         <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
                                             {{ eachConversation.message }}
@@ -106,7 +106,7 @@
                                 <div v-else-if="eachConversation.sender.role === 'admin'" class="chat-message d-flex mb-3 justify-content-center">
                                     <div class="message-text" style="background-color: #f1f1f1; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
                                         <div style="font-size: 13px; color: #4d4d4d;">
-                                            <strong>Admin ({{ eachConversation.room.admin.username }})</strong>
+                                            <strong>{{ eachConversation.room.admin.username }} (admin)</strong>
                                         </div>
                                         <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
                                             {{ eachConversation.message }}
@@ -126,12 +126,12 @@
                 </div>
 
                 <!-- Chat Input Box -->
-                <form action="#" class="chat-input mt-5" style="position: relative;">
-                    <div class="input-group bg-secondary px-3 py-2 rounded">
+                <form action="#" class="chat-input" style="position: relative; margin-top: 40px;">
+                    <div class="input-group px-3 py-2 rounded">
                         <input :disabled="! room" v-model="newConversation.conversation_message" type="text" class="form-control border-0 rounded-pill p-3 shadow-sm" :placeholder="! room ? '' : 'Type a message...'" style="font-size: 14px; transition: all 0.3s;">
                         <div class="input-group-append">
-                            <button @click="submitConversation" :disabled="! room" type="button" class="btn btn-primary rounded-circle mx-3 shadow-sm" style="height: 45px; width: 45px; padding: 0;">
-                                <i class="fa fa-paper-plane" style="font-size: 20px;"></i>
+                            <button @click="submitConversation" :disabled="! room" type="button" class="btn btn-primary rounded-circle mx-3 shadow-md border" style="height: 35px; width: 35px; padding: 0">
+                                <i class="fa fa-paper-plane" style="font-size: 18px;"></i>
                             </button>
                         </div>
                     </div>
@@ -183,14 +183,14 @@
                         <div v-if="dialogType == 'create'" class="form-group mb-3">
                             <label for="room_user_id2" class="font-weight-semibold text-primary text-sm">Select Inviter</label>
                             <select v-model="newRoom.room_user_id2" class="custom-select form-control-sm rounded-pill shadow-sm" required>
-                                <option disabled selected value="">Select Member</option>
+                                <option disabled selected value="">Select Member Inviter</option>
                                 <option v-for="eachMember in members" :key="eachMember.id" :value="eachMember.id">{{ eachMember.name }}</option>
                             </select>
                             <p class="help-block text-danger">{{ newRoom.error_user_id2 }}</p>
                         </div>
 
                         <!-- Admin Selection -->
-                        <div v-if="dialogType == 'create'" class="form-group mb-3">
+                        <div v-if="authRole == 'member' && dialogType == 'create'" class="form-group mb-3">
                             <label for="room_admin_id" class="font-weight-semibold text-primary text-sm">Select Admin</label>
                             <select v-model="newRoom.room_admin_id" class="custom-select form-control-sm rounded-pill shadow-sm" required>
                                 <option disabled selected value="">Select Admin</option>
@@ -198,11 +198,20 @@
                             </select>
                             <p class="help-block text-danger">{{ newRoom.error_admin_id }}</p>
                         </div>
+                        <div v-else-if="authRole != 'member' && dialogType == 'create'" class="form-group mb-3">
+                            <label for="room_user_id1" class="font-weight-semibold text-primary text-sm">Select Owner</label>
+                            <select v-model="newRoom.room_user_id1" class="custom-select form-control-sm rounded-pill shadow-sm" required>
+                                <option disabled selected value="">Select Member Owner</option>
+                                <option v-for="eachMember in members" :key="eachMember.id" :value="eachMember.id">{{ eachMember.name }}</option>
+                            </select>
+                            <p class="help-block text-danger">{{ newRoom.error_user_id1 }}</p>
+                        </div>
                     </div>
 
                     <!-- Modal Footer -->
                     <div class="modal-footer border-0">
                         <button @click="resetNewRoom" type="button" class="btn btn-secondary rounded-pill px-4 py-2" data-dismiss="modal">Cancel</button>
+                        <span class="mx-2"></span>
                         <button @click="dialogType == 'create' ? createNewRoom () : joinRoom (dialogType)" v-text="dialogType == 'create' ? 'Create Room' : 'Join Room'" type="button" class="btn btn-primary rounded-pill px-4 py-2"></button>
                     </div>
                 </form>
@@ -228,6 +237,7 @@ export default
         return {
 
             authId: null,
+            authRole: null,
             room: null,
             rooms: [],
             conversations: [],
@@ -253,6 +263,9 @@ export default
 
                 room_admin_id: '',
                 error_admin_id: '',
+
+                room_user_id1: '',
+                error_user_id1: '',
             },
 
             newConversation: {
@@ -295,6 +308,9 @@ export default
 
             this.newRoom.room_admin_id = '';
             this.newRoom.error_admin_id = '';
+
+            this.newRoom.room_user_id1 = '';
+            this.newRoom.error_user_id1 = '';
         },
 
         createNewRoom ()
@@ -312,6 +328,7 @@ export default
                 this.newRoom.error_role_user1 = error?.response?.data?.errors?.room_role_user1?.[0];
                 this.newRoom.error_user_id2 = error?.response?.data?.errors?.room_user_id2?.[0];
                 this.newRoom.error_admin_id = error?.response?.data?.errors?.room_admin_id?.[0];
+                this.newRoom.error_user_id1 = error?.response?.data?.errors?.room_user_id1?.[0];
             });
         },
 
@@ -456,6 +473,7 @@ export default
         axios.get ('/transaction/room').then (response => {
 
             this.authId = response.data.authId;
+            this.authRole = response.data.authRole;
             this.admins = response.data.admins;
             this.members = response.data.members;
             this.rooms = response.data.rooms;

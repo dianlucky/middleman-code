@@ -7,6 +7,7 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\AdminPageController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ChatAdminController;
 use App\Models\Conversation;
 
 /*
@@ -68,5 +69,8 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::delete('/delete/{id}', [UserController::class, 'adminDelete']);
 });
 
+Route::prefix('room')->middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/', [ChatAdminController::class, 'index']);
+});
 
 Route::get('/user', [UserController::class, 'index']);

@@ -115,7 +115,8 @@ class RoomRepository extends RoomAdminRepository
      */
     public function create(array $data): ?Room
     {
-        $data['owner_id'] = $this->getUser()->id;
+        if ($this->getUser()->role != self::$USER_MEMBER) $data['admin_id'] = $this->getUser()->id;
+        else $data['owner_id'] = $this->getUser()->id;
 
         return parent::create($data);
     }

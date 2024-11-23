@@ -65,12 +65,14 @@ class ChatController extends Controller
         if (! $id) {
 
             $authId = auth()->id();
+            $authRole = auth()->user()->role;
             $admins = User::where('role', 'admin')->get();
             $members = User::whereKeyNot(auth()->id())->where('role', 'member')->get();
 
             $data = compact(
 
                 'authId',
+                'authRole',
                 'admins',
                 'members',
                 'rooms'
@@ -97,10 +99,12 @@ class ChatController extends Controller
 
             'owner_role' => $request->room_role_user1,
             'inviter_id' => (int) $request->room_user_id2,
-            'admin_id' => (int) $request->room_admin_id,
             'room_name' => $request->room_name,
             'room_password' => $request->room_password,
         ];
+
+        if ($request->room_admin_id) $roomData['admin_id'] = (int) $request->room_admin_id;
+        else if ($request->room_user_id1) $roomData['owner_id'] = (int) $request->room_user_id1;
 
         $data = $this->roomService->store($roomData);
 

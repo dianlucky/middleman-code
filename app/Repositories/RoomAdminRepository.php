@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Hash;
  */
 class RoomAdminRepository extends Repository
 {
+    public static string $USER_SUPERADMIN = 'superadmin';
+    public static string $USER_ADMIN = 'admin';
+    public static string $USER_MEMBER = 'member';
+
     public static string $ROLE_SELLER = 'penjual';
     public static string $ROLE_BUYER = 'pembeli';
 
