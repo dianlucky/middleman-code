@@ -36,6 +36,7 @@ Route::prefix('transaction')->middleware('auth')->group(function()
     Route::put('/room/leave/{id}', [ChatController::class, 'leaveRoom'])->name('transaction.room.leave');
     Route::delete('/room/{id}', [ChatController::class, 'destroyRoom'])->name('transaction.room.destroy');
 
+    Route::get('/conversation/{id}', [ChatController::class, 'showConversation'])->name('transaction.conversation.show');
     Route::post('/conversation', [ChatController::class, 'storeConversation'])->name('transaction.conversation.store');
     Route::delete('/conversation/{id}', [ChatController::class, 'destroyConversation'])->name('transaction.conversation.destroy');
 });

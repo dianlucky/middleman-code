@@ -13,7 +13,7 @@
                         <!-- Search Input with Icon -->
                         <form action="#" class="d-flex">
                             <div class="input-group">
-                                <input v-model="roomSearch" type="text" id="rooms-search" class="form-control border-0 rounded-pill p-2 shadow-sm" placeholder="Search Uninvited Room Id" style="font-size: 14px; transition: all 0.3s;">
+                                <input v-model="roomSearch" type="text" class="form-control border-0 rounded-pill p-2 shadow-sm" placeholder="Search Uninvited Room Id" style="font-size: 14px; transition: all 0.3s;">
                             </div>
                         </form>
                     </div>
@@ -30,7 +30,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(eachRoom, indexRoom) in rooms" :key="eachRoom.id" style="cursor: pointer;">
+                            <tr @click="chooseRoom (indexRoom)" v-for="(eachRoom, indexRoom) in rooms" :key="eachRoom.id" :style="{ cursor: 'pointer', backgroundColor: room?.id === eachRoom.id ? 'rgba(0, 0, 0, 0.18)' : '' }">
                                 <td>{{ eachRoom.id }}</td>
                                 <td>{{ eachRoom.name }}</td>
                                 <td class="text-center">
@@ -74,60 +74,60 @@
                 </div>
 
                 <div class="chat-box" style="min-height: 400px; max-height: 400px; overflow-y: auto; padding: 15px;">
-
-                    <div class="chat-message d-flex mb-3 justify-content-start">
-                        <div class="message-text" style="background-color: #dcf8c6; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
-                            <div style="font-size: 13px; color: #4d4d4d;">
-                                <strong>JohnDoe</strong>
+                    <div v-if="conversations.length > 0">
+                        <div v-for="(eachConversation, indexConversation) in conversations" :key="eachConversation.id">
+                            <div v-if="eachConversation.user_sender_id === authId" class="chat-message d-flex mb-3 justify-content-start">
+                                <div class="message-text" style="background-color: #dcf8c6; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                    <div style="font-size: 13px; color: #4d4d4d;">
+                                        <strong>{{ eachConversation.sender.username }}</strong>
+                                    </div>
+                                    <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
+                                        {{ eachConversation.message }}
+                                    </p>
+                                    <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
+                                        {{ datetime (eachConversation.created_at) }}
+                                    </span>
+                                </div>
                             </div>
-                            <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
-                                Hello, is anyone there?
-                            </p>
-                            <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
-                                5 minutes ago
-                            </span>
+                            <div v-else>
+                                <div v-if="eachConversation.sender.role === 'member'" class="chat-message d-flex mb-3 justify-content-end">
+                                    <div class="message-text" style="background-color: #e0f7fa; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                        <div style="font-size: 13px; color: #4d4d4d;">
+                                            <strong>{{ eachConversation.sender.username }}</strong>
+                                        </div>
+                                        <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
+                                            {{ eachConversation.message }}
+                                        </p>
+                                        <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
+                                            {{ datetime (eachConversation.created_at) }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div v-else-if="eachConversation.sender.role === 'admin'" class="chat-message d-flex mb-3 justify-content-center">
+                                    <div class="message-text" style="background-color: #f1f1f1; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                        <div style="font-size: 13px; color: #4d4d4d;">
+                                            <strong>Admin ({{ eachConversation.room.admin.username }})</strong>
+                                        </div>
+                                        <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
+                                            {{ eachConversation.message }}
+                                        </p>
+                                        <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
+                                            {{ datetime (eachConversation.created_at) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="chat-message d-flex mb-3 justify-content-center">
-                        <div class="message-text" style="background-color: #f1f1f1; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
-                            <div style="font-size: 13px; color: #4d4d4d;">
-                                <strong>Admin (Admin 1)</strong>
-                            </div>
-                            <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
-                                Please follow the rules and respect everyone in the room.
-                            </p>
-                            <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
-                                1 minute ago
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="chat-message d-flex mb-3 justify-content-end">
-                        <div class="message-text" style="background-color: #e0f7fa; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
-                            <div style="font-size: 13px; color: #4d4d4d;">
-                                <strong>JaneDoe</strong>
-                            </div>
-                            <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
-                                Hi John! I'm here, how can I help you?
-                            </p>
-                            <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
-                                3 minutes ago
-                            </span>
-                        </div>
-                    </div>
-
-                    <p class="text-center">No more messages.</p>
+                    <p v-else class="text-center">No choosed room.</p>
                 </div>
 
                 <!-- Chat Input Box -->
                 <form action="#" class="chat-input mt-5" style="position: relative;">
                     <div class="input-group bg-secondary px-3 py-2 rounded">
-                        <input name="conversation_room_id" type="hidden" value="101">
-                        <input name="conversation_receiver_id" type="hidden" value="1">
-                        <input name="conversation_message" type="text" id="message-input" class="form-control border-0 rounded-pill p-3 shadow-sm" placeholder="Type a message..." style="font-size: 14px; transition: all 0.3s;">
+                        <input :disabled="! room" v-model="newConversation.conversation_message" type="text" class="form-control border-0 rounded-pill p-3 shadow-sm" :placeholder="! room ? '' : 'Type a message...'" style="font-size: 14px; transition: all 0.3s;">
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-primary rounded-circle mx-3 shadow-sm" style="height: 45px; width: 45px; padding: 0;">
+                            <button @click="submitConversation" :disabled="! room" type="button" class="btn btn-primary rounded-circle mx-3 shadow-sm" style="height: 45px; width: 45px; padding: 0;">
                                 <i class="fa fa-paper-plane" style="font-size: 20px;"></i>
                             </button>
                         </div>
@@ -233,6 +233,7 @@ export default
             members: [],
             dialogType: '',
             roomSearch: '',
+
             newRoom: {
 
                 room_name: '',
@@ -249,6 +250,15 @@ export default
 
                 room_admin_id: '',
                 error_admin_id: '',
+            },
+
+            newConversation: {
+
+                conversation_room_id: '',
+                conversation_receiver_id: '',
+
+                conversation_message: '',
+                error_conversation_message: '',
             },
         };
     },
@@ -338,6 +348,50 @@ export default
             axios.put (`/transaction/room/leave/${room.id}`).then (response => {
 
                 this.rooms[indexRoom] = response.data.original;
+            });
+        },
+
+        chooseRoom (indexRoom)
+        {
+            this.room = this.rooms[indexRoom];
+
+            axios.get (`/transaction/conversation/${this.room.id}`).then (response => {
+
+                this.conversations = response.data.conversations;
+
+                this.scrollConversation ();
+            });
+        },
+
+        scrollConversation ()
+        {
+            const chatBox = $ ('.chat-box');
+
+            chatBox.animate ({ scrollTop: chatBox.height (), }, 100);
+        },
+
+        resetNewConversation ()
+        {
+            this.newConversation.conversation_room_id = '';
+            this.newConversation.conversation_receiver_id = '';
+
+            this.newConversation.conversation_message = '';
+            this.newConversation.error_conversation_message = '';
+        },
+
+        submitConversation ()
+        {
+            this.newConversation.conversation_room_id = this.room.id;
+            this.newConversation.conversation_receiver_id = this.authId === this.room.admin.id ? this.room.admin.id : this.room.inviter.id;
+
+            axios.post ('/transaction/conversation', this.newConversation).then (response => {
+
+                this.conversations.push (response.data.original);
+                this.resetNewConversation ();
+
+            }).catch (error => {
+
+                this.newConversation.error_conversation_message = error?.response?.data?.errors?.conversation_message?.[0];
             });
         },
     },

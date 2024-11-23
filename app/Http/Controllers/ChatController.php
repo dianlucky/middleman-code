@@ -158,6 +158,23 @@ class ChatController extends Controller
 
     /**
      * @param Illuminate\Http\Request $request
+     * @param int|string $id
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function showConversation(Request $request, $id): JsonResponse
+    {
+        $conversations = $this->conversationService->index([ 'room_id' => $id, ])->getData();
+
+        $data = compact(
+
+            'conversations'
+        );
+
+        return response()->json($data);
+    }
+
+    /**
+     * @param Illuminate\Http\Request $request
      * @return Illuminate\Http\JsonResponse
      */
     public function storeConversation(Request $request): JsonResponse
