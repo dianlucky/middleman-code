@@ -24,11 +24,6 @@ class Conversation extends Model
     /**
      * @var array
      */
-    protected $appends = ['sender_role', 'receiver_role'];
-
-    /**
-     * @var array
-     */
     protected $with = ['room', 'sender', 'receiver'];
 
     /**
@@ -53,37 +48,5 @@ class Conversation extends Model
     public function receiver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_receiver_id');
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getSenderRoleAttribute(): ?string
-    {
-        $room = $this->room;
-
-        if ($this->user_sender_id == $room->user_id1) {
-            return $room->role_user1;
-        } elseif ($this->user_sender_id == $room->user_id2) {
-            return $room->role_user2;
-        }
-
-        return null;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getReceiverRoleAttribute(): ?string
-    {
-        $room = $this->room;
-
-        if ($this->user_receiver_id == $room->user_id1) {
-            return $room->role_user1;
-        } elseif ($this->user_receiver_id == $room->user_id2) {
-            return $room->role_user2;
-        }
-
-        return null;
     }
 }

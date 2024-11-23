@@ -13,7 +13,7 @@
                         <!-- Search Input with Icon -->
                         <form action="#" class="d-flex">
                             <div class="input-group">
-                                <input v-model="roomSearch" type="text" class="form-control border-0 rounded-pill p-2 shadow-sm" placeholder="Search Uninvited Room Id" style="font-size: 14px; transition: all 0.3s;">
+                                <input v-model="roomSearch" type="text" class="form-control border-0 rounded-pill p-2 shadow-sm" placeholder="Search Room Id" style="font-size: 14px; transition: all 0.3s;">
                             </div>
                         </form>
                     </div>
@@ -119,7 +119,10 @@
                             </div>
                         </div>
                     </div>
-                    <p v-else class="text-center">No choosed room.</p>
+                    <p v-else class="text-center">
+                        <div v-if="! room">No choosed room.</div>
+                        <div v-else>There are no conversations.</div>
+                    </p>
                 </div>
 
                 <!-- Chat Input Box -->
@@ -333,6 +336,7 @@ export default
             }).then (response => {
 
                 this.rooms[indexRoom] = response.data.original;
+                this.resetNewRoom ();
                 $ ('#modalRoom').modal ('hide');
 
             }).catch (error => {
@@ -382,7 +386,19 @@ export default
         submitConversation ()
         {
             this.newConversation.conversation_room_id = this.room.id;
-            this.newConversation.conversation_receiver_id = this.authId === this.room.admin.id ? this.room.admin.id : this.room.inviter.id;
+
+            if (this.authId === this.room.admin.id) {
+
+                this.newConversation.conversation_receiver_id = this.room.admin.id;
+
+            } else if (this.authId === this.room.owner.id) {
+
+                this.newConversation.conversation_receiver_id = this.room.inviter.id;
+
+            } else if (this.authId === this.room.inviter.id) {
+
+                this.newConversation.conversation_receiver_id = this.room.owner.id;
+            }
 
             axios.post ('/transaction/conversation', this.newConversation).then (response => {
 
@@ -398,11 +414,39 @@ export default
 
     watch: {
 
-        roomSearch (newValue, oldValue)
+        roomSearch ()
         {
             axios.get (`/transaction/room/${this.roomSearch}`).then (response => {
 
                 this.rooms = response.data.rooms;
+            });
+        },
+
+        room ()
+        {
+            if (this.authId != this.room.admin.id) {
+
+                window.Echo.private (`conversation.${this.room.admin.id}.${this.room.id}`)
+                .listen (".conversation.created", (item) => {
+                    this.conversations.push (item.conversation);
+                });
+
+            } else {
+
+                window.Echo.private (`conversation.${this.room.owner.id}.${this.room.id}`)
+                .listen (".conversation.created", (item) => {
+                    this.conversations.push (item.conversation);
+                });
+
+                window.Echo.private (`conversation.${this.room.inviter.id}.${this.room.id}`)
+                .listen (".conversation.created", (item) => {
+                    this.conversations.push (item.conversation);
+                });
+            }
+
+            window.Echo.private (`conversation.${this.authId}.${this.room.id}`)
+            .listen (".conversation.created", (item) => {
+                this.conversations.push (item.conversation);
             });
         },
     },
@@ -431,7 +475,13 @@ export default
 
     mounted ()
     {
-        //
+        window.Echo.connector.pusher.connection.bind ('connected', () => {
+            console.log ('Connected.');
+        });
+
+        window.Echo.connector.pusher.connection.bind ('disconnected', () => {
+            console.log ('Disconnected.');
+        });
     },
 };
 

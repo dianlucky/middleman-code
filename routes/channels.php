@@ -20,6 +20,9 @@ Broadcast::channel('room.{user_inviter_id}', function ($user, $user_inviter_id) 
 });
 
 Broadcast::channel('conversation.{user_receiver_id}.{room_id}', function ($user, $user_receiver_id, $room_id) {
-    return (int) $user->id === (int) $user_receiver_id ||
-           (int) $user_receiver_id === (int) @Room::find($room_id)->admin->id;
+    $room = @Room::find($room_id);
+
+    return (int) $user_receiver_id === (int) @$room->admin->id ||
+           (int) $user_receiver_id === (int) @$room->owner->id ||
+           (int) $user_receiver_id === (int) @$room->inviter->id;
 });
