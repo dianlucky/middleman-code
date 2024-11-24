@@ -71,6 +71,7 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
 
 Route::prefix('room')->middleware(['auth', 'is_admin'])->group(function () {
     Route::get('/', [ChatAdminController::class, 'index']);
+    Route::put('/{id}', [ChatAdminController::class, 'update']);
 });
 
 Route::get('/user', [UserController::class, 'index']);

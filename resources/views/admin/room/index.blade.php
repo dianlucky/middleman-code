@@ -32,6 +32,7 @@ input {
 @endpush
 
 @section('content')
+@if (auth()->user()->role != 'superadmin')
     <div>
         <div class="container-fluid">
             <div class="row">
@@ -47,4 +48,5 @@ input {
             </div>
         </div>
     </div>
+@endif
 @endsection

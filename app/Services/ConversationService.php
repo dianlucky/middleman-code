@@ -8,6 +8,7 @@ use App\Events\User\ConversationDeleted;
 use App\Models\Conversation;
 use App\Models\Room;
 use App\Models\User;
+use App\Repositories\RoomAdminRepository;
 use App\Repositories\ConversationRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
@@ -43,7 +44,7 @@ class ConversationService extends Service
     public function index(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            'room_id' => ['required', 'exists:rooms,id'],
+            'room_id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
         ])->validate();
 
         $this->conversationRepository->setRoom(Room::find($datas['room_id']));
@@ -59,7 +60,7 @@ class ConversationService extends Service
     public function show(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            'room_id' => ['required', 'exists:rooms,id'],
+            'room_id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
             'id' => ['required', Rule::exists(Conversation::class)],
         ])->validate();
 
@@ -76,7 +77,7 @@ class ConversationService extends Service
     public function store(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            'room_id' => ['required', 'exists:rooms,id'],
+            'room_id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
             'user_receiver_id' => ['required', 'exists:users,id'],
             'message' => ['required', 'string'],
         ])->validate();
@@ -95,7 +96,7 @@ class ConversationService extends Service
     public function update(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            'room_id' => ['required', 'exists:rooms,id'],
+            'room_id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
             'id' => ['required', Rule::exists(Conversation::class)],
             'message' => ['nullable', 'string'],
         ])->validate();
@@ -114,7 +115,7 @@ class ConversationService extends Service
     public function destroy(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            'room_id' => ['required', 'exists:rooms,id'],
+            'room_id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
             'id' => ['required', Rule::exists(Conversation::class)],
         ])->validate();
 

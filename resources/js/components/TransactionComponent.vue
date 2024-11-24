@@ -43,10 +43,17 @@
                                     <form v-else-if="eachRoom.user_id2 === authId && eachRoom.status_user2 === 'joined'" action="#" class="d-flex">
                                         <button @click="leaveRoom (indexRoom)" type="button" class="btn btn-warning btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
                                     </form>
-                                    <button v-else class="btn btn-secondary btn-sm rounded py-1 px-2" disabled>
-                                        <i v-if="eachRoom.admin_id === authId" class="fa fa-users-cog"></i>
-                                        <i v-else class="fa fa-lock"></i>
-                                    </button>
+                                    <div v-else class="dropdown">
+                                        <button id="statusChanger" class="btn btn-sm btn-success rounded dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="badge badge-pill badge-success position-absolute" style="margin-right: -20px; margin-top: -13px">{{ eachRoom.status }}</span>
+                                            <i class="fa fa-users-cog text-dark"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="statusChanger">
+                                            <a @click="updateStatusRoom (indexRoom, 'ongoing')" class="dropdown-item" href="#">Ongoing</a>
+                                            <a @click="updateStatusRoom (indexRoom, 'canceled')" class="dropdown-item" href="#">Canceled</a>
+                                            <a @click="updateStatusRoom (indexRoom, 'done')" class="dropdown-item" href="#">Done</a>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -313,6 +320,20 @@ export default
             this.newRoom.error_user_id1 = '';
         },
 
+        updateStatusRoom (indexRoom, status)
+        {
+            const room = this.rooms[indexRoom];
+
+            axios.put (`/room/${room.id}`, {
+
+                room_status: status,
+
+            }).then (response => {
+
+                this.rooms[indexRoom].status = response.data.original.status;
+            });
+        },
+
         createNewRoom ()
         {
             axios.post ('/transaction/room', this.newRoom).then (response => {
@@ -359,7 +380,7 @@ export default
             }).catch (error => {
 
                 this.newRoom.error_room_password = error?.response?.data?.errors?.password?.[0];
-            });;
+            });
         },
 
         leaveRoom (indexRoom)

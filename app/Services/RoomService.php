@@ -7,6 +7,7 @@ use App\Events\User\RoomCreated;
 use App\Events\User\RoomUpdated;
 use App\Events\User\RoomDeleted;
 use App\Models\Room;
+use App\Repositories\RoomAdminRepository;
 use App\Repositories\RoomRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
@@ -54,7 +55,7 @@ class RoomService extends Service
     public function show(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            "id" => ["required", Rule::exists(Room::class)],
+            'id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
         ])->validate();
 
         $room = $this->roomRepository->get($datas["id"]);
@@ -69,12 +70,12 @@ class RoomService extends Service
     public function join(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            "id" => ["required", Rule::exists(Room::class, "id")],
+            'id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
             "password" => ["required", function ($attribute, $value, Closure $fail) use ($datas) {
                 $room = Room::find($datas["id"]);
                 if (!$room) {
                     $fail("The specified room does not exist.");
-                } elseif (!Hash::check($value, $room->password)) {
+                } else if (!Hash::check($value, $room->password)) {
                     $fail("The password is incorrect for the specified room.");
                 }
             }],
@@ -92,7 +93,7 @@ class RoomService extends Service
     public function leave(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            "id" => ["required", Rule::exists(Room::class)],
+            'id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
         ])->validate();
 
         $room = $this->roomRepository->leave($datas["id"]);
@@ -125,7 +126,7 @@ class RoomService extends Service
     public function update(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            "id" => ["required", Rule::exists(Room::class)],
+            'id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
             "room_name" => ["nullable", "string", "min:1", "max:255"],
             "room_password" => ["nullable", "string", "min:8"],
             "room_status" => ["nullable", "string"],
@@ -144,7 +145,7 @@ class RoomService extends Service
     public function destroy(array $datas): JsonResponse
     {
         Validator::make($datas, [
-            "id" => ["required", Rule::exists(Room::class)],
+            'id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
         ])->validate();
 
         $deletedRoom = $this->roomRepository->delete($datas["id"]);

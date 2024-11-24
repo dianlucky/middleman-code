@@ -20,8 +20,12 @@ class RoomRepository extends RoomAdminRepository
     public function all(int|string $id = 0)
     {
         $status = $id ? self::$INVITER_STATUS_LEAVED : self::$INVITER_STATUS_JOINED;
+        $statuses = [];
 
-        $query = Room::where('status', '=', self::$STATUS_ONGOING)
+        if ($this->getUser()->role != self::$USER_MEMBER) $statuses = [ self::$STATUS_ONGOING, self::$STATUS_CANCELED, self::$STATUS_DONE, ];
+        else $statuses = [ self::$STATUS_ONGOING, ];
+
+        $query = Room::whereIn('status', $statuses)
             ->where(function ($query) use ($status) {
                 $query
                     ->orWhere('admin_id', '=', $this->getUser()->id)
@@ -45,8 +49,13 @@ class RoomRepository extends RoomAdminRepository
      */
     public function get(int|string $id): ?Room
     {
+        $statuses = [];
+
+        if ($this->getUser()->role != self::$USER_MEMBER) $statuses = [ self::$STATUS_ONGOING, self::$STATUS_CANCELED, self::$STATUS_DONE, ];
+        else $statuses = [ self::$STATUS_ONGOING, ];
+
         return parent::accessGet(
-            fn() => Room::where('status', '=', self::$STATUS_ONGOING)
+            fn() => Room::whereIn('status', $statuses)
                 ->where(function ($query) {
                     $query
                         ->orWhere('admin_id', '=', $this->getUser()->id)
