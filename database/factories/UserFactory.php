@@ -2,22 +2,31 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
     /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
+     * @var string
      */
-    public function definition(): array
+    protected $model = User::class;
+
+    /**
+     * @return array
+     */
+    public function definition()
     {
         return [
-            //
+            'username' => $this->faker->unique()->userName,
+            'password' => bcrypt('password'),
+            'role' => $this->faker->randomElement(['superadmin', 'admin', 'member']),
+            'name' => $this->faker->name,
+            'phone' => $this->faker->phoneNumber,
+            'birth_date' => $this->faker->date(),
+            'profile_pic' => 'def-profile.png',
+            'address' => $this->faker->address,
         ];
     }
 }

@@ -1,12 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RoomController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\AdminPageController;
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ChatAdminController;
 use App\Models\Conversation;
 
 /*
@@ -26,20 +27,25 @@ Route::get('/price', [HomepageController::class, 'price']);
 Route::get('/testimonial', [HomepageController::class, 'testimonial']);
 Route::get('/contact', action: [HomepageController::class, 'contact']);
 
-Route::prefix('transaction')->middleware('auth')->group(function(){
-    Route::get('/', [HomepageController::class, 'transaction']);
-});
+Route::prefix('transaction')->middleware('auth')->group(function()
+{
+    Route::get('/', [ChatController::class, 'index'])->name('transaction.index');
 
-Route::prefix('room')->middleware('auth')->group(function(){
-    Route::post('/create', [RoomController::class, 'create']);
-    Route::post('/in', [RoomController::class, 'in']);
-    Route::get('/{id}', [RoomController::class, 'roomEnter']);
+    Route::get('/room/{id?}', [ChatController::class, 'showRoom'])->name('transaction.room.show');
+    Route::post('/room', [ChatController::class, 'storeRoom'])->name('transaction.room.store');
+    Route::put('/room/join/{id}', [ChatController::class, 'joinRoom'])->name('transaction.room.join');
+    Route::put('/room/leave/{id}', [ChatController::class, 'leaveRoom'])->name('transaction.room.leave');
+    Route::delete('/room/{id}', [ChatController::class, 'destroyRoom'])->name('transaction.room.destroy');
+
+    Route::get('/conversation/{id}', [ChatController::class, 'showConversation'])->name('transaction.conversation.show');
+    Route::post('/conversation', [ChatController::class, 'storeConversation'])->name('transaction.conversation.store');
+    Route::delete('/conversation/{id}', [ChatController::class, 'destroyConversation'])->name('transaction.conversation.destroy');
 });
 
 Route::post('/send-message', [ConversationController::class, 'sendMessage'])->middleware('auth');
 
 Route::prefix('/login')->middleware('guest')->group(function(){
-    Route::get('/', [LoginController::class, 'login']);
+    Route::get('/', [LoginController::class, 'login'])->name('login');
     Route::post('/auth', [LoginController::class, 'auth']);
 });
 
@@ -52,8 +58,6 @@ Route::prefix('register')->group(function(){
 
 // routes/web.php
 Route::get('/search-users', [UserController::class, 'searchUsers'])->name('search.users');
-Route::get('/search-rooms', [RoomController::class, 'searchRooms'])->name('search.room');
-
 
 Route::get('/dashboard', [AdminPageController::class, 'dashboard'])->middleware(['auth', 'is_admin']);
 Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
@@ -65,5 +69,9 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::delete('/delete/{id}', [UserController::class, 'adminDelete']);
 });
 
+Route::prefix('room')->middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/', [ChatAdminController::class, 'index']);
+    Route::put('/{id}', [ChatAdminController::class, 'update']);
+});
 
 Route::get('/user', [UserController::class, 'index']);

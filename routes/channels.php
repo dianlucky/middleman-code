@@ -1,23 +1,28 @@
 <?php
 
+use App\Models\User;
+use App\Models\Room;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
 |--------------------------------------------------------------------------
-| Broadcast Channels
+| Broadcast Channel Authorization
 |--------------------------------------------------------------------------
 |
-| Here you may register all of the event broadcasting channels that your
-| application supports. The given channel authorization callbacks are
-| used to check if an authenticated user can listen to the channel.
+| Here you may register all of the channel authorization callbacks that your
+| application needs. The given authorization closure will be called when
+| someone tries to subscribe to the channel.
 |
 */
 
-// Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
-//     return (int) $user->id === (int) $id;
-// });
+Broadcast::channel('room.{user_inviter_id}', function ($user, $user_inviter_id) {
+    return (int) $user->id === (int) $user_inviter_id;
+});
 
-Broadcast::channel('chat.{roomId}', function ($user, $roomId) {
-    // Logika untuk memverifikasi apakah user bisa mengakses room tertentu
-    return true; // atau sesuai kondisi yang diinginkan
+Broadcast::channel('conversation.{user_receiver_id}.{room_id}', function ($user, $user_receiver_id, $room_id) {
+    $room = @Room::find($room_id);
+
+    return (int) $user_receiver_id === (int) @$room->admin->id ||
+           (int) $user_receiver_id === (int) @$room->owner->id ||
+           (int) $user_receiver_id === (int) @$room->inviter->id;
 });

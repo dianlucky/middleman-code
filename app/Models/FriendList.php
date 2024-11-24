@@ -9,6 +9,8 @@ class FriendList extends Model
 {
     use HasFactory;
 
+    /**
+     * @var array
+     */
     protected $guarded = ['id'];
-
 }

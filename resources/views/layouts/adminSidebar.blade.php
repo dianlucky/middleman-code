@@ -32,7 +32,7 @@
 
                         <li class="menu-title">Transaction</li>
                         <li>
-                            <a href="/" class="waves-effect">
+                            <a href="/room" class="waves-effect">
                                 <i class="mdi mdi-comment-multiple-outline"></i>
                                 <span>
                                     Rooms

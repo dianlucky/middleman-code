@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class UserSeeder extends Seeder
@@ -17,50 +18,64 @@ class UserSeeder extends Seeder
             [
                 'id' => 1,
                 'username' => 'superadmin',
-                'password' => '$2y$10$fskXMFFybYlubJ6WLrctGuE.lvcflC0QOhhyNQhUguBz7yVuXkgZC', //middleman.2510
+                'password' => Hash::make('middleman.2510'),
                 'name' => 'superadmin',
                 'role' => 'superadmin',
             ],
             [
                 'id' => 2,
                 'username' => 'admin1',
-                'password' => '$2y$10$nLEmSnCLaAmtVQZ6DPShr.H7v.nL165DDnOTmJXo1rLz19bCg2Ky.', //admin123
+                'password' => Hash::make('admin123'),
                 'name' => 'Admin Lucky',
                 'role' => 'admin',
             ],
             [
                 'id' => 3,
                 'username' => 'admin2',
-                'password' => '$2y$10$nLEmSnCLaAmtVQZ6DPShr.H7v.nL165DDnOTmJXo1rLz19bCg2Ky.', 
+                'password' => Hash::make('admin123'),
                 'name' => 'Admin Latif',
                 'role' => 'admin',
             ],
             [
                 'id' => 4,
                 'username' => 'admin3',
-                'password' => '$2y$10$nLEmSnCLaAmtVQZ6DPShr.H7v.nL165DDnOTmJXo1rLz19bCg2Ky.',
+                'password' => Hash::make('admin123'),
                 'name' => 'Admin Imel',
                 'role' => 'admin',
             ],
             [
                 'id' => 5,
                 'username' => 'admin4',
-                'password' => '$2y$10$nLEmSnCLaAmtVQZ6DPShr.H7v.nL165DDnOTmJXo1rLz19bCg2Ky.',
+                'password' => Hash::make('admin123'),
                 'name' => 'Admin Fadil',
                 'role' => 'admin',
             ],
             [
                 'id' => 6,
                 'username' => 'admin5',
-                'password' => '$2y$10$nLEmSnCLaAmtVQZ6DPShr.H7v.nL165DDnOTmJXo1rLz19bCg2Ky.',
+                'password' => Hash::make('admin123'),
                 'name' => 'Admin Fauzan',
                 'role' => 'admin',
             ],
             [
                 'id' => 7,
-                'username' => 'member',
-                'password' => '$2y$10$yHCzC5/zPRE.TYbDNmyGgum/eSJimktjRIMyTE81fMdnuydJ.1e1u', // member123
-                'name' => 'Member testing',
+                'username' => 'member1',
+                'password' => Hash::make('member123'),
+                'name' => 'Member 1',
+                'role' => 'member',
+            ],
+            [
+                'id' => 8,
+                'username' => 'member2',
+                'password' => Hash::make('member123'),
+                'name' => 'Member 2',
+                'role' => 'member',
+            ],
+            [
+                'id' => 9,
+                'username' => 'member3',
+                'password' => Hash::make('member123'),
+                'name' => 'Member 3',
                 'role' => 'member',
             ],
             
