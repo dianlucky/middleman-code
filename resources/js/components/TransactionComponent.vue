@@ -20,7 +20,7 @@
                 </div>
 
                 <!-- Table Container with horizontal scroll -->
-                <div class="table-container" style="max-height: 300px; overflow-y: auto; overflow-x: auto;">
+                <div class="table-container" style="min-height: 300px; max-height: 300px; overflow-y: auto; overflow-x: auto;">
                     <table class="table table-hover table-striped" style="table-layout: fixed; width: 100%;">
                         <thead>
                             <tr>
@@ -44,9 +44,9 @@
                                         <button @click="leaveRoom (indexRoom)" type="button" class="btn btn-warning btn-sm rounded py-1 px-2 shadow-sm">Leave</button>
                                     </form>
                                     <div v-else class="dropdown">
-                                        <button id="statusChanger" class="btn btn-sm btn-success rounded dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <span class="badge badge-pill badge-success position-absolute" style="margin-right: -20px; margin-top: -13px">{{ eachRoom.status }}</span>
-                                            <i class="fa fa-users-cog text-dark"></i>
+                                        <button id="statusChanger" class="btn btn-sm btn-primary border rounded dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="badge badge-pill badge-primary rounded position-absolute" style="margin-left: -30px; margin-top: -10px">{{ eachRoom.status }}</span>
+                                            <i class="fa fa-users-cog text-white"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="statusChanger">
                                             <a @click="updateStatusRoom (indexRoom, 'ongoing')" class="dropdown-item" href="#">Ongoing</a>
@@ -133,7 +133,7 @@
                 </div>
 
                 <!-- Chat Input Box -->
-                <form action="#" class="chat-input" style="position: relative; margin-top: 40px;">
+                <form action="#" @submit="e => { e.preventDefault (); submitConversation (); }" class="chat-input" style="position: relative;" :style="{ marginTop: ! room ? '55px' : '10px', }">
                     <div class="input-group px-3 py-2 rounded">
                         <input :disabled="! room" v-model="newConversation.conversation_message" type="text" class="form-control border-0 rounded-pill p-3 shadow-sm" :placeholder="! room ? '' : 'Type a message...'" style="font-size: 14px; transition: all 0.3s;">
                         <div class="input-group-append">

@@ -14,11 +14,6 @@
     max-height: 380px !important;
 }
 
-.chat-input {
-
-    margin-top: 55px !important;
-}
-
 input {
 
     color: black !important;
