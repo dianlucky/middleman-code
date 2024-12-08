@@ -4,7 +4,7 @@
     <div class="row">
         <!-- Room List Section -->
         <div class="col-lg-4 col-md-12 mb-4">
-            <div class="bg-gradient p-4 rounded shadow-lg" style="background: linear-gradient(145deg, #f9f9f9, #e0e0e0); height: 480px; overflow-y: auto; min-height: 480px;">
+            <div class="bg-gradient p-4 rounded shadow-lg" style="background: linear-gradient(145deg, #f9f9f9, #e0e0e0); height: 550px; overflow-y: auto; min-height: 550px;">
                 <div class="row mb-3">
                     <div class="col-12">
                         <h5 class="font-weight-bold text-dark">Rooms</h5>
@@ -20,7 +20,7 @@
                 </div>
 
                 <!-- Table Container with horizontal scroll -->
-                <div class="table-container" style="min-height: 300px; max-height: 300px; overflow-y: auto; overflow-x: auto;">
+                <div class="table-container" style="min-height: 330px; max-height: 330px; overflow-y: auto; overflow-x: auto;">
                     <table class="table table-hover table-striped" style="table-layout: fixed; width: 100%;">
                         <thead>
                             <tr>
@@ -30,7 +30,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr @click="chooseRoom (indexRoom)" v-for="(eachRoom, indexRoom) in rooms" :key="eachRoom.id" :style="{ cursor: 'pointer', backgroundColor: room?.id === eachRoom.id ? 'rgba(0, 0, 0, 0.18)' : '' }">
+                            <tr @click="eachRoom.user_id1 === authId || (eachRoom.user_id2 === authId && eachRoom.status_user2 === 'joined') || eachRoom.admin.id === authId ? chooseRoom (indexRoom) : false" v-for="(eachRoom, indexRoom) in rooms" :key="eachRoom.id" :style="{ cursor: 'pointer', backgroundColor: room?.id === eachRoom.id ? 'rgba(0, 0, 0, 0.18)' : '' }">
                                 <td>{{ eachRoom.id }}</td>
                                 <td>{{ eachRoom.name }}</td>
                                 <td class="text-center">
@@ -61,8 +61,8 @@
                 </div>
 
                 <!-- Create Room Button -->
-                <div class="text-center mt-4">
-                    <button @click="showDialog ('create')" class="btn btn-success rounded-pill btn-sm py-2 px-4 shadow-lg" style="width: 80%;">
+                <div class="text-center" :style="{ marginTop: authRole == 'member' ? '3.5rem' : '0.8rem', }">
+                    <button @click="showDialog ('create')" class="btn btn-primary rounded-pill btn-sm py-2 px-4 shadow-lg" style="width: 80%;">
                         Create Room
                     </button>
                 </div>
@@ -70,13 +70,50 @@
         </div>
 
         <!-- Chatroom Section -->
-        <div class="col-lg-8 col-md-12">
-            <div class="bg-gradient p-4 rounded shadow-lg" style="background: linear-gradient(145deg, #e8e8e8, #c9c9c9); height: 480px; min-height: 480px;">
-                <div class="row border-bottom mb-3">
-                    <div class="col-12 d-flex align-items-center">
-                        <h5 v-if="room" class="font-weight-bold text-dark mb-3">
+        <div class="col-lg-8 col-md-12 bg-gradient p-4 rounded shadow-lg" style="background: linear-gradient(145deg, #e8e8e8, #c9c9c9); height: 550px; min-height: 550px;">
+            <div style="height: 480px; min-height: 480px;">
+                <div v-if="room" class="row border-bottom mb-3">
+                    <div class="col-6 d-flex justify-content-start">
+                        <h5 class="font-weight-bold text-dark mb-3">
                             {{ '#' + room.id }}
                         </h5>
+                    </div>
+                    <div class="col-6 d-flex justify-content-end">
+                        <button type="button" class="btn" data-toggle="modal" data-target="#modalInformation">
+                            <i class="fa fa-info-circle"></i>
+                        </button>
+
+                        <div class="modal fade" id="modalInformation" tabindex="-1" role="dialog" aria-labelledby="modalInformationTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content border-0 rounded">
+                                    <div class="modal-header border-0">
+                                        <h5 class="modal-title" id="modalInformationTitle">Room Information</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="font-weight-bold text-uppercase"></span>
+                                            <span>{{ originalDateTime (room.created_at) }}</span>
+                                        </div>
+                                        <div>&nbsp;</div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="font-weight-bold text-uppercase">{{ room.role_user1 }}</span>
+                                            <span>{{ room.owner.username }} ({{ room.owner.name }})</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="font-weight-bold text-uppercase">{{ room.role_user2 }}</span>
+                                            <span>{{ room.inviter.username }} ({{ room.inviter.name }})</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span class="font-weight-bold text-uppercase">Admin</span>
+                                            <span>{{ room.admin.username }} ({{ room.admin.name }})</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -133,12 +170,12 @@
                 </div>
 
                 <!-- Chat Input Box -->
-                <form action="#" @submit="e => { e.preventDefault (); submitConversation (); }" class="chat-input" style="position: relative;" :style="{ marginTop: ! room ? '55px' : '10px', }">
+                <form @submit="e => { e.preventDefault (); }" class="chat-input" style="position: relative;" :style="{ marginTop: ! room ? '55px' : '10px', }">
                     <div class="input-group px-3 py-2 rounded">
-                        <input :disabled="! room" v-model="newConversation.conversation_message" type="text" class="form-control border-0 rounded-pill p-3 shadow-sm" :placeholder="! room ? '' : 'Type a message...'" style="font-size: 14px; transition: all 0.3s;">
+                        <input @keydown="controlConversation" :disabled="! room" ref="chat" v-model="newConversation.conversation_message" type="text" class="form-control border-0 rounded-pill p-3 shadow-sm" :placeholder="! room ? '' : 'Type a message...'" style="font-size: 14px; transition: all 0.3s;">
                         <div class="input-group-append">
-                            <button @click="submitConversation" :disabled="! room" type="button" class="btn btn-primary rounded-circle mx-3 shadow-md border" style="height: 35px; width: 35px; padding: 0">
-                                <i class="fa fa-paper-plane" style="font-size: 18px;"></i>
+                            <button @click="submitConversation" :disabled="! room" type="button" class="btn btn-success rounded-circle mx-3 shadow-md border" style="height: 35px; width: 35px; padding: 0;">
+                                <i class="fa fa-paper-plane" style="font-size: 15px;"></i>
                             </button>
                         </div>
                     </div>
@@ -148,12 +185,12 @@
     </div>
 
     <!-- Add Room Modal -->
-    <div class="modal fade" id="modalRoom" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalRoom" tabindex="-1" role="dialog" aria-labelledby="modalRoomLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content rounded-lg shadow-lg border-0">
                 <!-- Modal Header -->
                 <div class="modal-header bg-gradient-to-r from-indigo-600 to-blue-500 text-white">
-                    <h5 v-text="dialogType == 'create' ? 'Create Room' : 'Join Room'" class="modal-title text-sm" id="exampleModalLabel"></h5>
+                    <h5 v-text="dialogType == 'create' ? 'Create Room' : 'Join Room'" class="modal-title text-sm" id="modalRoomLabel"></h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -288,9 +325,14 @@ export default
 
     methods: {
 
+        originalDateTime (date)
+        {
+            return moment (date).format ('LLLL');
+        },
+
         datetime (date)
         {
-            return moment (date).fromNow();
+            return moment (date).fromNow ();
         },
 
         showDialog (type)
@@ -402,7 +444,20 @@ export default
                 this.conversations = response.data.conversations;
 
                 this.scrollConversation ();
+                this.$refs.chat.focus ();
             });
+        },
+
+        controlConversation (e)
+        {
+            if (e.shiftKey) {
+
+                if (e.key === 'Enter') this.scrollConversation ();
+
+            } else {
+
+                if (e.key === 'Enter') this.submitConversation ();
+            }
         },
 
         scrollConversation ()
@@ -442,6 +497,7 @@ export default
 
                 this.conversations.push (response.data.original);
                 this.resetNewConversation ();
+                this.scrollConversation ();
 
             }).catch (error => {
 
@@ -467,6 +523,7 @@ export default
                 window.Echo.private (`conversation.${this.room.admin.id}.${this.room.id}`)
                 .listen (".conversation.created", (item) => {
                     this.conversations.push (item.conversation);
+                    this.scrollConversation ();
                 });
 
             } else {
@@ -474,17 +531,20 @@ export default
                 window.Echo.private (`conversation.${this.room.owner.id}.${this.room.id}`)
                 .listen (".conversation.created", (item) => {
                     this.conversations.push (item.conversation);
+                    this.scrollConversation ();
                 });
 
                 window.Echo.private (`conversation.${this.room.inviter.id}.${this.room.id}`)
                 .listen (".conversation.created", (item) => {
                     this.conversations.push (item.conversation);
+                    this.scrollConversation ();
                 });
             }
 
             window.Echo.private (`conversation.${this.authId}.${this.room.id}`)
             .listen (".conversation.created", (item) => {
                 this.conversations.push (item.conversation);
+                this.scrollConversation ();
             });
         },
     },
