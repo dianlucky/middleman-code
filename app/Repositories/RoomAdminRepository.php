@@ -4,7 +4,6 @@ namespace App\Repositories;
 
 use App\Models\User;
 use App\Models\Room;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * @method Room[]|null all()
@@ -64,7 +63,7 @@ class RoomAdminRepository extends Repository
 
         return parent::mutateUpdate(function() use ($data, $model) {
             if (isset($data['room_name'])) $model->name = $data['room_name'];
-            if (isset($data['room_password'])) $model->password = Hash::make($data['room_password']);
+            if (isset($data['room_password'])) $model->password = $data['room_password'];
             if (isset($data['room_status'])) $model->status = $data['room_status'];
             if (isset($data['inviter_status'])) $model->status_user2 = $data['inviter_status'];
             $model->save();
@@ -87,7 +86,7 @@ class RoomAdminRepository extends Repository
             $model = new Room();
             $model->id = $model->generateRoomId();
             $model->name = $data['room_name'];
-            $model->password = Hash::make($data['room_password']);
+            $model->password = $data['room_password'];
             $model->status = $data['room_status'] ?? self::$STATUS_ONGOING;
             $model->owner()->associate($owner);
             $model->role_user1 = $data['owner_role'];
