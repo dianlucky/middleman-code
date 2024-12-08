@@ -12,7 +12,6 @@ use App\Repositories\RoomRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * @method JsonResponse index()
@@ -75,7 +74,7 @@ class RoomService extends Service
                 $room = Room::find($datas["id"]);
                 if (!$room) {
                     $fail("The specified room does not exist.");
-                } else if (!Hash::check($value, $room->password)) {
+                } else if ($value !== $room->password) {
                     $fail("The password is incorrect for the specified room.");
                 }
             }],

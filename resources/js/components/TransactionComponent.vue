@@ -99,6 +99,10 @@
                                         </div>
                                         <div>&nbsp;</div>
                                         <div class="d-flex justify-content-between mb-2">
+                                            <span class="font-weight-bold text-uppercase">Password</span>
+                                            <span>{{ room.password }}</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between mb-2">
                                             <span class="font-weight-bold text-uppercase">{{ room.role_user1 }}</span>
                                             <span>{{ room.owner.username }} ({{ room.owner.name }})</span>
                                         </div>
