@@ -39,7 +39,7 @@ Route::prefix('transaction')->middleware('auth')->group(function()
 
     Route::get('/conversation/{id}', [ChatController::class, 'showConversation'])->name('transaction.conversation.show');
     Route::post('/conversation', [ChatController::class, 'storeConversation'])->name('transaction.conversation.store');
-    Route::delete('/conversation/{id}', [ChatController::class, 'destroyConversation'])->name('transaction.conversation.destroy');
+    Route::put('/conversation/{id}', [ChatController::class, 'optionConversation'])->name('transaction.conversation.option');
 });
 
 Route::post('/send-message', [ConversationController::class, 'sendMessage'])->middleware('auth');

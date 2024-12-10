@@ -199,15 +199,18 @@ class ChatController extends Controller
      * @param Illuminate\Http\Request $request
      * @return Illuminate\Http\JsonResponse
      */
-    public function destroyConversation(Request $request): JsonResponse
+    public function optionConversation(Request $request): JsonResponse
     {
         $conversationData = [
 
             'id' => (int) $request->id,
             'room_id' => (int) $request->conversation_room_id,
+            'action' => $request->action,
         ];
 
-        $data = $this->conversationService->destroy($roomData);
+        if ($conversationData['action'] === 'delete') $data = $this->conversationService->destroy($conversationData);
+        else if ($conversationData['action'] === 'hide') $data = $this->conversationService->hidden($conversationData);
+        else if ($conversationData['action'] === 'show') $data = $this->conversationService->shown($conversationData);
 
         return response()->json($data);
     }
