@@ -124,7 +124,7 @@
                 <div class="chat-box" style="min-height: 400px; max-height: 400px; overflow-y: auto; overflow-x: hidden; padding: 15px;">
                     <div v-if="conversations.length > 0">
                         <div v-for="(eachConversation, indexConversation) in conversations" :key="eachConversation.id">
-                            <div v-if="eachConversation.user_sender_id === authId" class="chat-message d-flex mb-3 justify-content-start">
+                            <div v-if="eachConversation.user_sender_id === authId" class="chat-message d-flex mb-3 justify-content-end">
                                 <div class="message-text" style="background-color: #dcf8c6; padding: 15px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
                                     <span class="message-time d-flex justify-content-end align-items-center" style="margin: -10px; font-size: 10px; color: #999;">
                                         <span>{{ datetime (eachConversation.created_at) }}</span>
@@ -141,7 +141,7 @@
                                     <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
                                         {{ eachConversation.message }}
                                     </p>
-                                    <span class="message-check" style="position: absolute; top: 5px; right: -25px; font-size: 10px; color: #999;">
+                                    <span v-if="checkboxConversation" class="message-check" style="position: absolute; right: 0px; font-size: 10px; color: #999;" :style="{ top: authRole == 'member' ? '3.5rem' : '2.3rem', }">
                                         <span class="form-check">
                                             <input class="form-check-input" type="checkbox" v-model="bulkConversations" :value="indexConversation">
                                         </span>
@@ -149,7 +149,7 @@
                                 </div>
                             </div>
                             <div v-else>
-                                <div v-if="eachConversation.sender.role === 'member'" class="chat-message d-flex mb-3 justify-content-end">
+                                <div v-if="eachConversation.sender.role === 'member'" class="chat-message d-flex mb-3 justify-content-start">
                                     <div class="message-text" style="background-color: #e0f7fa; padding: 15px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
                                         <span class="message-time d-flex justify-content-end align-items-center" style="margin: -10px; font-size: 10px; color: #999;">
                                             <span>{{ datetime (eachConversation.created_at) }}</span>
@@ -199,12 +199,13 @@
                                 <button @click="submitConversation ()" :disabled="! room" type="button" class="btn btn-success rounded-circle ml-3 mr-1 shadow-md border" style="height: 35px; width: 35px; padding: 0;">
                                     <i class="fa fa-paper-plane" style="font-size: 15px;"></i>
                                 </button>
-                                <button :disabled="! room" type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                <button :disabled="! room" type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split rounded-circle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 35px; width: 35px;"></button>
                                 <div class="dropdown-menu rounded p-2">
                                     <a v-if="authRole == 'member'" @click="submitConversation ('private')" class="dropdown-item p-1" href="#"><small>Send as Private</small></a>
                                     <a v-if="authRole == 'member'" @click="optionConversations ('hide')" class="dropdown-item p-1" href="#"><small>Make Private</small></a>
                                     <a v-if="authRole == 'member'" @click="optionConversations ('show')" class="dropdown-item p-1" href="#"><small>Make Public</small></a>
                                     <a class="dropdown-item p-1" @click="optionConversations ('delete')" href="#"><small>Delete</small></a>
+                                    <a class="dropdown-item p-1" @click="checkboxConversation = ! checkboxConversation; bulkConversations = []" href="#"><small>Mark</small></a>
                                 </div>
                             </div>
                         </div>
@@ -351,6 +352,7 @@ export default
                 error_conversation_message: '',
             },
 
+            checkboxConversation: false,
             bulkConversations: [],
         };
     },
