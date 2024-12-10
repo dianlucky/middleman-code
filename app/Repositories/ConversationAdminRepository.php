@@ -45,6 +45,7 @@ class ConversationAdminRepository extends Repository
         return parent::mutateCreate(function() use ($data, $room, $sender, $receiver) {
             $conversation = new Conversation();
             $conversation->room_id = $room->id;
+            $conversation->is_admin_watchable = $data['is_admin_watchable'] ?? true;
             $conversation->user_sender_id = $sender->id;
             $conversation->user_receiver_id = $receiver->id;
             $conversation->message = $data['message'];
@@ -66,6 +67,9 @@ class ConversationAdminRepository extends Repository
         $conversation = Conversation::findOrFail($id);
 
         return parent::mutateUpdate(function() use ($data, $conversation) {
+            if (isset($data['is_admin_watchable'])) {
+                $conversation->is_admin_watchable = $data['is_admin_watchable'];
+            }
             if (isset($data['message'])) {
                 $conversation->message = $data['message'];
             }
