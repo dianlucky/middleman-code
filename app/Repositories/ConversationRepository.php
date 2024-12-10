@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Room;
 use App\Models\Conversation;
+use App\Repositories\RoomAdminRepository;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
@@ -45,11 +46,14 @@ class ConversationRepository extends ConversationAdminRepository
     public function all()
     {
         $roomId = $this->getRoom()->id;
+        $user = $this->getUser();
 
         return parent::accessAll(
-            fn() => Conversation::where([
-                ['room_id', '=', $roomId],
-            ])->get()
+            fn() => Conversation::where('room_id', '=', $roomId)
+                ->when($user->role === RoomAdminRepository::$USER_ADMIN, function ($query) {
+                    $query->where('is_admin_watchable', true);
+                })
+                ->get()
         );
     }
 
@@ -96,6 +100,28 @@ class ConversationRepository extends ConversationAdminRepository
         $data['user_sender_id'] = $this->getUser()->id;
 
         return parent::update($this->get($id)->id, $data);
+    }
+
+    /**
+     * @param int|string $id
+     * @return Conversation|null
+     */
+    public function hidden(int|string $id): ?Conversation
+    {
+        $roomId = $this->getRoom()->id;
+
+        return parent::update($this->get($id)->id, [ "is_admin_watchable" => false, ]);
+    }
+
+    /**
+     * @param int|string $id
+     * @return Conversation|null
+     */
+    public function shown(int|string $id): ?Conversation
+    {
+        $roomId = $this->getRoom()->id;
+
+        return parent::update($this->get($id)->id, [ "is_admin_watchable" => true, ]);
     }
 
     /**

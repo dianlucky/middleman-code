@@ -121,47 +121,64 @@
                     </div>
                 </div>
 
-                <div class="chat-box" style="min-height: 400px; max-height: 400px; overflow-y: auto; padding: 15px;">
+                <div class="chat-box" style="min-height: 400px; max-height: 400px; overflow-y: auto; overflow-x: hidden; padding: 15px;">
                     <div v-if="conversations.length > 0">
                         <div v-for="(eachConversation, indexConversation) in conversations" :key="eachConversation.id">
                             <div v-if="eachConversation.user_sender_id === authId" class="chat-message d-flex mb-3 justify-content-start">
-                                <div class="message-text" style="background-color: #dcf8c6; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                <div class="message-text" style="background-color: #dcf8c6; padding: 15px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                    <span class="message-time d-flex justify-content-end align-items-center" style="margin: -10px; font-size: 10px; color: #999;">
+                                        <span>{{ datetime (eachConversation.created_at) }}</span>
+                                        <span v-if="authRole == 'member'">
+                                            <button disabled class="btn btn-sm" data-toggle="tooltip" data-placement="top" :title="eachConversation.is_admin_watchable ? 'This conversation is shown to the Admin' : 'This conversation is hidden from the Admin'">
+                                                <i v-if="eachConversation.is_admin_watchable" class="fa fa-eye"></i>
+                                                <i v-else class="fa fa-eye-slash"></i>
+                                            </button>
+                                        </span>
+                                    </span>
                                     <div style="font-size: 13px; color: #4d4d4d;">
                                         <strong>{{ eachConversation.sender.username }} ({{eachConversation.sender_role ?? 'admin'}})</strong>
                                     </div>
                                     <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
                                         {{ eachConversation.message }}
                                     </p>
-                                    <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
-                                        {{ datetime (eachConversation.created_at) }}
+                                    <span class="message-check" style="position: absolute; top: 5px; right: -25px; font-size: 10px; color: #999;">
+                                        <span class="form-check">
+                                            <input class="form-check-input" type="checkbox" v-model="bulkConversations" :value="indexConversation">
+                                        </span>
                                     </span>
                                 </div>
                             </div>
                             <div v-else>
                                 <div v-if="eachConversation.sender.role === 'member'" class="chat-message d-flex mb-3 justify-content-end">
-                                    <div class="message-text" style="background-color: #e0f7fa; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                    <div class="message-text" style="background-color: #e0f7fa; padding: 15px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                        <span class="message-time d-flex justify-content-end align-items-center" style="margin: -10px; font-size: 10px; color: #999;">
+                                            <span>{{ datetime (eachConversation.created_at) }}</span>
+                                            <span v-if="authRole == 'member'">
+                                                <button disabled class="btn btn-sm" data-toggle="tooltip" data-placement="top" :title="eachConversation.is_admin_watchable ? 'This conversation is shown to the Admin' : 'This conversation is hidden from the Admin'">
+                                                    <i v-if="eachConversation.is_admin_watchable" class="fa fa-eye"></i>
+                                                    <i v-else class="fa fa-eye-slash"></i>
+                                                </button>
+                                            </span>
+                                        </span>
                                         <div style="font-size: 13px; color: #4d4d4d;">
                                             <strong>{{ eachConversation.sender.username }} ({{eachConversation.sender_role ?? 'admin'}})</strong>
                                         </div>
                                         <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
                                             {{ eachConversation.message }}
                                         </p>
-                                        <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
-                                            {{ datetime (eachConversation.created_at) }}
-                                        </span>
                                     </div>
                                 </div>
                                 <div v-else-if="eachConversation.sender.role === 'admin'" class="chat-message d-flex mb-3 justify-content-center">
-                                    <div class="message-text" style="background-color: #f1f1f1; padding: 12px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                    <div class="message-text" style="background-color: #f1f1f1; padding: 15px; border-radius: 15px; width: auto; min-width: 250px; max-width: 60%; position: relative; word-wrap: break-word; white-space: normal;">
+                                        <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
+                                            <span>{{ datetime (eachConversation.created_at) }}</span>
+                                        </span>
                                         <div style="font-size: 13px; color: #4d4d4d;">
                                             <strong>{{ eachConversation.room.admin.username }} (admin)</strong>
                                         </div>
                                         <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
                                             {{ eachConversation.message }}
                                         </p>
-                                        <span class="message-time" style="position: absolute; top: 5px; right: 10px; font-size: 10px; color: #999;">
-                                            {{ datetime (eachConversation.created_at) }}
-                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -174,13 +191,22 @@
                 </div>
 
                 <!-- Chat Input Box -->
-                <form @submit="e => { e.preventDefault (); }" class="chat-input" style="position: relative;" :style="{ marginTop: ! room ? '55px' : '10px', }">
+                <form @submit="e => { e.preventDefault (); }" class="chat-input" style="position: relative;" :style="{ marginTop: ! room ? '55px' : '-3px', }">
                     <div class="input-group px-3 py-2 rounded">
                         <input @keydown="controlConversation" :disabled="! room" ref="chat" v-model="newConversation.conversation_message" type="text" class="form-control border-0 rounded-pill p-3 shadow-sm" :placeholder="! room ? '' : 'Type a message...'" style="font-size: 14px; transition: all 0.3s;">
                         <div class="input-group-append">
-                            <button @click="submitConversation" :disabled="! room" type="button" class="btn btn-success rounded-circle mx-3 shadow-md border" style="height: 35px; width: 35px; padding: 0;">
-                                <i class="fa fa-paper-plane" style="font-size: 15px;"></i>
-                            </button>
+                            <div class="btn-group dropup">
+                                <button @click="submitConversation ()" :disabled="! room" type="button" class="btn btn-success rounded-circle ml-3 mr-1 shadow-md border" style="height: 35px; width: 35px; padding: 0;">
+                                    <i class="fa fa-paper-plane" style="font-size: 15px;"></i>
+                                </button>
+                                <button :disabled="! room" type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split rounded" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                <div class="dropdown-menu rounded p-2">
+                                    <a v-if="authRole == 'member'" @click="submitConversation ('private')" class="dropdown-item p-1" href="#"><small>Send as Private</small></a>
+                                    <a v-if="authRole == 'member'" @click="optionConversations ('hide')" class="dropdown-item p-1" href="#"><small>Make Private</small></a>
+                                    <a v-if="authRole == 'member'" @click="optionConversations ('show')" class="dropdown-item p-1" href="#"><small>Make Public</small></a>
+                                    <a class="dropdown-item p-1" @click="optionConversations ('delete')" href="#"><small>Delete</small></a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -324,6 +350,8 @@ export default
                 conversation_message: '',
                 error_conversation_message: '',
             },
+
+            bulkConversations: [],
         };
     },
 
@@ -480,7 +508,7 @@ export default
             this.newConversation.error_conversation_message = '';
         },
 
-        submitConversation ()
+        submitConversation (mode = 'public')
         {
             this.newConversation.conversation_room_id = this.room.id;
 
@@ -497,15 +525,76 @@ export default
                 this.newConversation.conversation_receiver_id = this.room.owner.id;
             }
 
+            if (mode === 'private') this.newConversation.is_admin_watchable = false;
+            if (mode === 'public') this.newConversation.is_admin_watchable = true;
+
             axios.post ('/transaction/conversation', this.newConversation).then (response => {
 
-                this.conversations.push (response.data.original);
+                this.addConversation (response.data.original);
                 this.resetNewConversation ();
-                this.scrollConversation ();
 
             }).catch (error => {
 
                 this.newConversation.error_conversation_message = error?.response?.data?.errors?.conversation_message?.[0];
+            });
+        },
+
+        optionConversations (action)
+        {
+            for (let indexConversation of this.bulkConversations) {
+
+                let conversation = this.conversations[indexConversation];
+
+                axios.put (`/transaction/conversation/${conversation.id}`, { action, conversation_room_id: this.room.id, }).then (response => {
+
+                    if (action === 'hide' || action === 'show') {
+
+                        conversation.is_admin_watchable = response.data.original.is_admin_watchable;
+
+                    } else if (action === 'delete') {
+
+                        this.removeConversation (response.data.original);
+                    }
+                });
+            }
+        },
+
+        addConversation (item)
+        {
+            this.conversations.push (item);
+            this.scrollConversation ();
+        },
+
+        removeConversation (item)
+        {
+            let indexConversation = this.conversations.findIndex (conversation => conversation.id === item.id);
+            this.conversations.splice (indexConversation, 1);
+        },
+
+        modeConversation (item)
+        {
+            let indexConversation = this.conversations.findIndex (conversation => conversation.id === item.id);
+            this.conversations[indexConversation].is_admin_watchable = item.is_admin_watchable;
+        },
+
+        listenToEventConversation (userId, roomId, customHandler)
+        {
+            window.Echo.private (`conversation.${userId}.${roomId}`)
+            .listen (".conversation.created", (item) => {
+                if (customHandler?.created) customHandler.created (item);
+                else this.addConversation (item.conversation);
+            })
+            .listen (".conversation.deleted", (item) => {
+                if (customHandler?.deleted) customHandler.deleted (item);
+                else this.removeConversation (item.conversation);
+            })
+            .listen (".conversation.hidden", (item) => {
+                if (customHandler?.hidden) customHandler.hidden (item);
+                else this.modeConversation (item.conversation);
+            })
+            .listen (".conversation.shown", (item) => {
+                if (customHandler?.shown) customHandler.shown (item);
+                else this.modeConversation (item.conversation);
             });
         },
     },
@@ -522,34 +611,30 @@ export default
 
         room ()
         {
-            if (this.authId != this.room.admin.id) {
+            if (this.authId === this.room.admin.id) {
 
-                window.Echo.private (`conversation.${this.room.admin.id}.${this.room.id}`)
-                .listen (".conversation.created", (item) => {
-                    this.conversations.push (item.conversation);
-                    this.scrollConversation ();
-                });
+                let created = (item) => {
+
+                    if (! item.conversation.is_admin_watchable) return true;
+
+                    this.addConversation (item.conversation);
+                    return false;
+                },
+
+                hidden = (item) => {
+
+                    this.removeConversation (item.conversation);
+                    return false;
+                };
+
+                this.listenToEventConversation (this.room.owner.id, this.room.id, { created, hidden, });
+                this.listenToEventConversation (this.room.inviter.id, this.room.id, { created, hidden, });
 
             } else {
 
-                window.Echo.private (`conversation.${this.room.owner.id}.${this.room.id}`)
-                .listen (".conversation.created", (item) => {
-                    this.conversations.push (item.conversation);
-                    this.scrollConversation ();
-                });
-
-                window.Echo.private (`conversation.${this.room.inviter.id}.${this.room.id}`)
-                .listen (".conversation.created", (item) => {
-                    this.conversations.push (item.conversation);
-                    this.scrollConversation ();
-                });
+                this.listenToEventConversation (this.authId, this.room.id);
+                this.listenToEventConversation (this.room.admin.id, this.room.id);
             }
-
-            window.Echo.private (`conversation.${this.authId}.${this.room.id}`)
-            .listen (".conversation.created", (item) => {
-                this.conversations.push (item.conversation);
-                this.scrollConversation ();
-            });
         },
     },
 

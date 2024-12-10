@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Events\User\ConversationCreated;
 use App\Events\User\ConversationUpdated;
+use App\Events\User\ConversationHidden;
+use App\Events\User\ConversationShown;
 use App\Events\User\ConversationDeleted;
 use App\Models\Conversation;
 use App\Models\Room;
@@ -106,6 +108,42 @@ class ConversationService extends Service
         broadcast(new ConversationUpdated($updatedConversation))->toOthers();
 
         return response()->json($updatedConversation, 200);
+    }
+
+    /**
+     * @param array $datas
+     * @return JsonResponse
+     */
+    public function hidden(array $datas): JsonResponse
+    {
+        Validator::make($datas, [
+            'room_id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
+            'id' => ['required', Rule::exists(Conversation::class)],
+        ])->validate();
+
+        $this->conversationRepository->setRoom(Room::find($datas['room_id']));
+        $hiddenConversation = $this->conversationRepository->hidden($datas["id"]);
+        broadcast(new ConversationHidden($hiddenConversation))->toOthers();
+
+        return response()->json($hiddenConversation, 200);
+    }
+
+    /**
+     * @param array $datas
+     * @return JsonResponse
+     */
+    public function shown(array $datas): JsonResponse
+    {
+        Validator::make($datas, [
+            'room_id' => ['required', Rule::exists(Room::class, 'id')->where('status', RoomAdminRepository::$STATUS_ONGOING)],
+            'id' => ['required', Rule::exists(Conversation::class)],
+        ])->validate();
+
+        $this->conversationRepository->setRoom(Room::find($datas['room_id']));
+        $shownConversation = $this->conversationRepository->shown($datas["id"]);
+        broadcast(new ConversationShown($shownConversation))->toOthers();
+
+        return response()->json($shownConversation, 200);
     }
 
     /**
