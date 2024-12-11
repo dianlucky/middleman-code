@@ -494,13 +494,13 @@ export default
 
         controlConversation (e)
         {
-            if (e.shiftKey) {
+            if (e.shiftKey && e.key === 'Enter') {
 
-                if (e.key === 'Enter') this.scrollConversation ();
+                this.scrollConversation ();
 
-            } else {
+            } else if (! e.shiftKey && e.key === 'Enter') {
 
-                if (e.key === 'Enter') this.submitConversation ();
+                this.submitConversation ();
             }
         },
 
@@ -508,7 +508,11 @@ export default
         {
             const chatBox = $ ('.chat-box');
 
-            chatBox.animate ({ scrollTop: chatBox.height (), }, 100);
+            setTimeout (() => {
+
+                chatBox.animate ({ scrollTop: chatBox[0].scrollHeight, }, 100);
+
+            }, 50);
         },
 
         resetNewConversation ()
