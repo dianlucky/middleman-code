@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\HomepageController;
@@ -26,6 +27,8 @@ Route::get('/about', [HomepageController::class, 'about']);
 Route::get('/price', [HomepageController::class, 'price']);
 Route::get('/testimonial', [HomepageController::class, 'testimonial']);
 Route::get('/contact', action: [HomepageController::class, 'contact']);
+
+Route::post('/upload', [FileController::class, 'upload']);
 
 Route::prefix('transaction')->middleware('auth')->group(function()
 {
