@@ -138,10 +138,8 @@
                                     <div style="font-size: 13px; color: #4d4d4d;">
                                         <strong>{{ eachConversation.sender.username }} ({{eachConversation.sender_role ?? 'admin'}})</strong>
                                     </div>
-                                    <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
-                                        {{ eachConversation.message }}
-                                    </p>
-                                    <span v-if="checkboxConversation" class="message-check" style="position: absolute; right: 0px; font-size: 10px; color: #999;" :style="{ top: authRole == 'member' ? '3.5rem' : '2.3rem', }">
+                                    <p style="margin: 0; line-height: 1.4em; font-size: 14px;" v-html="eachConversation.message"></p>
+                                    <span v-if="checkboxConversation" class="message-check" style="position: absolute; right: 0px; font-size: 10px; color: #999;" :style="{ top: authRole == 'member' ? '3.3rem' : '2rem', }">
                                         <span class="form-check">
                                             <input class="form-check-input" type="checkbox" v-model="bulkConversations" :value="indexConversation">
                                         </span>
@@ -163,9 +161,7 @@
                                         <div style="font-size: 13px; color: #4d4d4d;">
                                             <strong>{{ eachConversation.sender.username }} ({{eachConversation.sender_role ?? 'admin'}})</strong>
                                         </div>
-                                        <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
-                                            {{ eachConversation.message }}
-                                        </p>
+                                        <p style="margin: 0; line-height: 1.4em; font-size: 14px;" v-html="eachConversation.message"></p>
                                     </div>
                                 </div>
                                 <div v-else-if="eachConversation.sender.role === 'admin'" class="chat-message d-flex mb-3 justify-content-center">
@@ -176,9 +172,7 @@
                                         <div style="font-size: 13px; color: #4d4d4d;">
                                             <strong>{{ eachConversation.room.admin.username }} (admin)</strong>
                                         </div>
-                                        <p style="margin: 0; line-height: 1.4em; font-size: 14px;">
-                                            {{ eachConversation.message }}
-                                        </p>
+                                        <p style="margin: 0; line-height: 1.4em; font-size: 14px;" v-html="eachConversation.message"></p>
                                     </div>
                                 </div>
                             </div>
@@ -193,6 +187,18 @@
                 <!-- Chat Input Box -->
                 <form @submit="e => { e.preventDefault (); }" class="chat-input" style="position: relative;" :style="{ marginTop: ! room ? '55px' : '-3px', }">
                     <div class="input-group px-3 py-2 rounded">
+                        <div class="input-group-append">
+                            <div class="btn-group dropup">
+                                <input ref="fileUpload" @change="uploadFile" :accept="supportedFileExtensionUpload.map (ext => `.${ext}`).join (',')" type="file" class="d-none" />
+                                <button @click="! fileUpload ? $refs.fileUpload.click () : null" :disabled="! room" type="button" class="btn rounded-circle ml-3 mr-3 shadow-md border" :class="! fileUpload ? 'btn-success' : 'btn-danger'" style="height: 35px; width: 35px; padding: 0;">
+                                    <i v-if="! fileUpload" class="fa fa-paperclip" style="font-size: 15px;"></i>
+                                    <i v-else class="fa fa-file" style="font-size: 15px;"></i>
+
+                                    <span v-if="fileUpload" @click="(e) => { e.stopPropagation (); fileUpload = null; }" class="position-absolute badge badge-danger rounded font-weight-light" style="right: -13px;"><i class="fa fa-times"></i></span>
+                                    <span v-if="fileUpload" @click="(e) => { e.stopPropagation (); previewFile (); }" class="position-absolute badge badge-success rounded font-weight-light" style="left: -10px; top: -10px;">{{ fileExtensionUpload }}</span>
+                                </button>
+                            </div>
+                        </div>
                         <input @keydown="controlConversation" :disabled="! room" ref="chat" v-model="newConversation.conversation_message" type="text" class="form-control border-0 rounded-pill p-3 shadow-sm" :placeholder="! room ? '' : 'Type a message...'" style="font-size: 14px; transition: all 0.3s;">
                         <div class="input-group-append">
                             <div class="btn-group dropup">
@@ -202,10 +208,10 @@
                                 <button :disabled="! room" type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split rounded-circle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 35px; width: 35px;"></button>
                                 <div class="dropdown-menu rounded p-2">
                                     <a v-if="authRole == 'member'" @click="submitConversation ('private')" class="dropdown-item p-1" href="#"><small>Send as Private</small></a>
-                                    <a v-if="authRole == 'member'" @click="optionConversations ('hide')" class="dropdown-item p-1" href="#"><small>Make Private</small></a>
-                                    <a v-if="authRole == 'member'" @click="optionConversations ('show')" class="dropdown-item p-1" href="#"><small>Make Public</small></a>
-                                    <a class="dropdown-item p-1" @click="optionConversations ('delete')" href="#"><small>Delete</small></a>
-                                    <a class="dropdown-item p-1" @click="checkboxConversation = ! checkboxConversation; bulkConversations = []" href="#"><small>Mark</small></a>
+                                    <a v-if="authRole == 'member' && checkboxConversation" @click="optionConversations ('hide')" class="dropdown-item p-1" href="#"><small>Make Private</small></a>
+                                    <a v-if="authRole == 'member' && checkboxConversation" @click="optionConversations ('show')" class="dropdown-item p-1" href="#"><small>Make Public</small></a>
+                                    <a v-if="checkboxConversation" class="dropdown-item p-1" @click="optionConversations ('delete')" href="#"><small>Delete</small></a>
+                                    <a class="dropdown-item p-1" @click="checkboxConversation = ! checkboxConversation; bulkConversations = []" href="#"><small>{{ ! checkboxConversation ? 'Mark' : 'Unmark' }}</small></a>
                                 </div>
                             </div>
                         </div>
@@ -351,6 +357,10 @@ export default
                 conversation_message: '',
                 error_conversation_message: '',
             },
+
+            fileUpload: null,
+            fileExtensionUpload: null,
+            supportedFileExtensionUpload: [ 'jpg', 'jpeg', 'png', 'pdf', ],
 
             checkboxConversation: false,
             bulkConversations: [],
@@ -530,6 +540,30 @@ export default
             if (mode === 'private') this.newConversation.is_admin_watchable = false;
             if (mode === 'public') this.newConversation.is_admin_watchable = true;
 
+            if (this.fileUpload) {
+
+                let fileUpload = this.fileUpload;
+
+                if (this.supportedFileExtensionUpload.includes (this.fileExtensionUpload)) {
+
+                    if (this.fileExtensionUpload === 'pdf') {
+
+                        fileUpload = `<div class="d-flex justify-content-center"><i class="fa fa-file"></i><a target="_blank" href="${fileUpload}" class="position-absolute" style="margin-left: 30px; margin-top: 5px;"><i class="fa fa-download"></i></a></div>`;
+
+                    } else {
+
+                        fileUpload = `<img src="${fileUpload}" class="attachment-image img-thumbnail" /><a target="_blank" href="${fileUpload}" class="position-absolute" style="right: 6px; top: 100px;"><i class="fa fa-download"></i></a>`;
+                    }
+                }
+
+                if (this.newConversation.conversation_message) fileUpload = fileUpload + '<br />';
+
+                this.newConversation.conversation_message = (fileUpload + this.newConversation.conversation_message).trim ();
+
+                this.fileUpload = null;
+                this.fileExtensionUpload = null;
+            }
+
             axios.post ('/transaction/conversation', this.newConversation).then (response => {
 
                 this.addConversation (response.data.original);
@@ -577,6 +611,35 @@ export default
         {
             let indexConversation = this.conversations.findIndex (conversation => conversation.id === item.id);
             this.conversations[indexConversation].is_admin_watchable = item.is_admin_watchable;
+        },
+
+        uploadFile (e)
+        {
+            const formData = new FormData ();
+            formData.append ('file', e.target.files[0]);
+
+            axios.post ('/upload', formData, {
+
+                headers: {
+
+                    'Content-Type': 'multipart/form-data',
+                    'Accept': 'application/json',
+                },
+
+            }).then (response => {
+
+                this.fileUpload = response.data.path;
+                this.fileExtensionUpload = this.fileUpload.split ('.').pop ();
+
+            }).catch (error => {
+
+                this.newConversation.error_conversation_message = error?.response?.data?.errors?.file?.[0];
+            });
+        },
+
+        previewFile ()
+        {
+            window.open (this.fileUpload, '_blank').focus ();
         },
 
         listenToEventConversation (userId, roomId, customHandler)
@@ -676,3 +739,24 @@ export default
 };
 
 </script>
+
+<style>
+
+.attachment-pdf {
+
+    width: 100%;
+    height: 100px;
+    border: none;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.attachment-image {
+
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: .25rem;
+}
+
+</style>
